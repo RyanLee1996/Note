@@ -1,59 +1,99 @@
 ## Software
 
-> 个人常用软件表单
+> List of personal commonly used software
 
-### 开发环境
+```yml
+Github: https://desktop.github.com/
 
-```
-Tomcat: http://tomcat.apache.org/
-Maven:
-Redis:
-IDEA:
-Webstorm:
-JDK:
-MySQL:
-Navicat:
-TortoiseSVN:
-Git:
-```
+Eudic: 
 
-### 软件
-
-```
-PC Master:
-Steam:
-Rainmeter:
+RIME: https://rime.im/
 
 /*Google*/
-Chrome:
-Google Drive:
+Chrome: https://www.google.com/chrome/
 
 /*Tencent*/
-TIM:
-QQ Pinyin:
+TIM: https://office.qq.com/download.html
+WeChat: https://pc.weixin.qq.com/?t=win_weixin&platform=wx&lang=zh
+QQ Music: https://y.qq.com/
 
 /*Netease*/
-Mail Master:
-Cloud Music:
-Youdao Dict:
+Mail Master: https://mail.163.com/dashi/
+Cloud Music: https://music.163.com/#/download
+Youdao Dict: http://www.youdao.com/
 ```
 
-### 工具
+### Development
 
-```
-ShadowsocksR:
-7-zip:
-Xshel:
-Thunder:
-Github:
+```yml
+Tomcat: http://tomcat.apache.org/
+Maven: http://maven.apache.org/download.cgi
+Oracle JDK: https://www.oracle.com/technetwork/java/javase/downloads/index.html
+MySQL: https://dev.mysql.com/downloads/mysql
+Navicat: https://www.navicat.com.cn/download/navicat-premium
 ```
 
-### 办公
+### Sync
 
+```yml
+TortoiseSVN:
+Git: https://git-scm.com/download/win
+Google Drive: https://www.google.com/intl/zh-CN_ALL/drive/download/
 ```
-XMind:
-Typore:
-Notepad++:
-Miscrosoft Office:
+
+### Editor
+
+```yml
+Webstorm:
+IDEA: http://www.jetbrains.com/idea/download/#section=windows
+Typore: https://typora.io/#windows
+Notepad++: https://notepad-plus-plus.org/
+```
+
+### Game
+
+```yml
+WeGame: https://www.wegame.com.cn/client
+Steam: https://store.steampowered.com/about/
+Uplay: https://www.ubisoft.com.cn/uplay
+UU: https://uu.163.com/
+```
+
+### System
+```yml
+Rainmeter: https://www.rainmeter.net/
+Dism++:
+NTLite:
+StartIsBack++:
+
+HuoRong: https://www.huorong.cn/
+IObit uninstall: https://www.iobit.com/en/advanceduninstaller.php
+CCleaner Pro:
+```
+
+### Tools
+
+```yml
+ShadowsocksR: https://github.com/shadowsocksrr/shadowsocksr-csharp/releases
+7-zip: https://www.7-zip.org/
+Thunder: https://www.xunlei.com/
+
+Xshell:
+cpu-z: https://www.cpuid.com/softwares/cpu-z.html
+UltraISO: 
+Office Tool Plus: https://otp.landian.vip/zh-cn/
+```
+
+### Office
+
+```yml
+XMind: https://www.xmind.cn/download/
+Miscrosoft Office: https://msdn.itellyou.cn/
+```
+
+### Drivers
+
+```yml
+NVIDIA: https://www.nvidia.cn/Download/index.aspx?lang=cn
 ```
 
