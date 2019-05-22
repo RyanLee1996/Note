@@ -8,6 +8,7 @@ Github: https://desktop.github.com/
 Eudic: 
 
 RIME: https://rime.im/
+Potplayer: http://potplayer.daum.net/?lang=zh_CN
 
 /*Google*/
 Chrome: https://www.google.com/chrome/
@@ -62,9 +63,9 @@ UU: https://uu.163.com/
 ### System
 ```yml
 Rainmeter: https://www.rainmeter.net/
-Dism++:
+Dism++: https://www.chuyu.me/zh-Hans/index.html
 NTLite:
-StartIsBack++:
+StartIsBack++: https://www.startisback.com/
 
 HuoRong: https://www.huorong.cn/
 IObit uninstall: https://www.iobit.com/en/advanceduninstaller.php
@@ -77,18 +78,22 @@ CCleaner Pro:
 ShadowsocksR: https://github.com/shadowsocksrr/shadowsocksr-csharp/releases
 7-zip: https://www.7-zip.org/
 Thunder: https://www.xunlei.com/
+DiskGenius: http://www.diskgenius.cn/download.php
+TreeSize Free: https://www.jam-software.com/treesize_free/
+Ryzen Master: https://www.amd.com/zh-hans/technologies/ryzen-master
 
-Xshell:
+
 cpu-z: https://www.cpuid.com/softwares/cpu-z.html
-UltraISO: 
 Office Tool Plus: https://otp.landian.vip/zh-cn/
+UltraISO: 
+Xshell:
 ```
 
 ### Office
 
 ```yml
 XMind: https://www.xmind.cn/download/
-Miscrosoft Office: https://msdn.itellyou.cn/
+Miscrosoft Office: 
 ```
 
 ### Drivers
