@@ -8,7 +8,7 @@ Java 虚拟机的内存模型分为两部分：一部分是线程共享的，包
 
 **以下为Java SE 6 的内存模型：**
 
-![](D:\Github\Note\Resources\JVM(Java SE6).png)
+![](..\Resources\JVM(Java SE6).png)
 
 Java SE7中，存储在永久代的部分数据就已经转移到了Java Heap或者是Native Memory。但永久代仍存在于JDK1.7中，并没完全移除，譬如符号引用(Symbols)转移到了Native Memory；Interned Strings转移到了java heap；类的静态变量(Class Statics)转移到了Java Heap。
 
@@ -23,7 +23,7 @@ Java SE7中，存储在永久代的部分数据就已经转移到了Java Heap或
 ### 程序计数器（Program Counter Register）
 
 1. 如果线程正在执行的是Java 方法，则这个计数器记录的是正在执行的虚拟机字节码指令地址
-2. 如果正在执行的是Native 方法，则这个技术器值为空（Undefined）
+2. 如果正在执行的是Native 方法，则这个计数器值为空（Undefined）
 3. 此内存区域是唯一一个在Java虚拟机规范中没有规定任何OutOfMemoryError(No OOM)情况的区域
 4. 线程隔离性，每个线程工作时都有属于自己的独立计数器。
 

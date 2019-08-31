@@ -1,11 +1,13 @@
-#Hibernate概述
+# Hibernate概述
 一个Java的持久化ORM框架
-##什么是框架
-	规范行为，简化代码，使程序员集中于业务编写  
+## 什么是框架
+​	规范行为，简化代码，使程序员集中于业务编写  
+
 - Hibernate 应用在dao层框架
 - 使用它实现curd操作，它的最底层就是JDBC  
 
-##Hibernate好处
+## Hibernate好处
+
 - 不用写复杂的jdbc代码
 - 允许开发者采用面向对象的方式来操作数据库,不需要写sql语句实现
 - 完成对象的持久化操作
@@ -16,21 +18,25 @@
   因为Hibernate框架对数据操作都是按照id进行操作的。
   那么建议；创建表的时候，必须要有id
 
-##与Mybatis/iBatis区别
+## 与Mybatis/iBatis区别
+
 - 比hibernate更灵活,运行速度快
 - 开发慢,需要sql语句,且熟练使用sql语句优化
 
-##Hibernate底层思想
+## Hibernate底层思想
+
 ### ORM思想
 javabean又被称为实体类
 orm(object relational mapping) 对象关系映射
+
 - 让实体类和数据库表进行一一对应关系
 - 让实体类属性和表中字段一一对应
 - 实体类实例与表里的记录一一对应
 - 不需要直接操作数据库表，而操作表对应实体类对象
 - orm采用元数据来描述对象-关系映射细节,元数据通常采用xml格式.
 
-#Hibernate入门
+# Hibernate入门
+
 ## 搭建环境
 JAVA SE EE 环境下都可以
 #### 步骤
@@ -149,7 +155,8 @@ window -> preferences -> 搜索xml Catalog
 
 - 脱管态:有id值,对象与session没有关联
 
-##Hibernatede缓存
+## Hibernatede缓存
+
 #### 特点
 - 一级缓存
 	- 默认打开的
@@ -201,6 +208,7 @@ finally{
      ```
   - 调用sessionFactory.getCurrentSession();
 - 获取绑定的session时,close()方法报错
+	
 	- 不需要手动关闭,由操作系统关闭
 
 ## Query对象,Criteria对象,SQLQuery对象
@@ -279,3 +287,4 @@ finally{
 悲观锁
 query.setLockMode(被加锁对象,LockMode.UPGRADE);
 乐观锁
+
