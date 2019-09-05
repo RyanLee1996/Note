@@ -300,13 +300,11 @@ ConcurrentHashMap 是线程安全的 HashMap 的实现。主要区别如下：
     java.util.Queue
     ```
 
-     
-
     是一个接口，它的实现类在Java并发包中。
 
     - 队列允许先进先出（FIFO）检索元素，但并非总是这样。
-    - Deque 接口允许从两端检索元素。
-
+- Deque 接口允许从两端检索元素。
+    
 - 栈与队列很相似，但它允许对元素进行后进先出（LIFO）进行检索。
 
     - Stack 是一个扩展自 Vector 的类，而 Queue 是一个接口。
@@ -366,12 +364,18 @@ HashMap 使用 key 对象的 `#hashCode()` 和 `#equals(Object obj)` 方法去�
 
     
 
+    ```java
+    //传递给MyKey的name参数被用于equals()和hashCode()中
+    MyKey key = new MyKey('Pankaj'); //assume hashCode=1234
+myHashMap.put(key, 'Value');
+    // 以下的代码会改变key的hashCode()和equals()值
+key.setName('Amit'); //assume new hashCode=7890
+    //下面会返回null，因为HashMap会尝试查找存储同样索引的key，而key已被改变了，匹配失败，返回null
+    myHashMap.get(new MyKey('Pankaj'));
     ```
-    //传递给MyKey的name参数被用于equals()和hashCode()中MyKey key = new MyKey('Pankaj'); //assume hashCode=1234myHashMap.put(key, 'Value');// 以下的代码会改变key的hashCode()和equals()值key.setName('Amit'); //assume new hashCode=7890//下面会返回null，因为HashMap会尝试查找存储同样索引的key，而key已被改变了，匹配失败，返回nullmyHashMap.get(new MyKey('Pankaj'));
-    ```
-
     
-
+    
+    
     - 那就是为何 String 和 Integer 被作为 HashMap 的 key 大量使用。
 
 🦅 **HashMap 的长度为什么是 2 的幂次方？**
