@@ -191,6 +191,8 @@ Java 支持的数据类型包括8种基本数据类型和引用类型。
 
 - 整数型：默认 `int` 型，小数默认是 `double` 型。Float 和 Long 类型的必须加后缀。比如：`float f = 100f` 
 
+> void也是Java的基本类型之一，其对应的包装类是不可实例化的，
+
 **引用类型**声明的变量是指该变量在内存中实际存储的是一个引用地址，实体在堆中。
 
 - 引用类型包括类、接口、数组等。
@@ -213,6 +215,18 @@ Java 支持的数据类型包括8种基本数据类型和引用类型。
 
 - 在 C 语言中，char 类型占 1 个字节，而汉字占 2 个字节，所以不能存储。
 - 在 Java 语言中，char 类型占 2 个字节，而且 Java 默认采用 Unicode 编码，一个 Unicode 码是 16 位，所以一个 Unicode 码占两个字节，Java 中无论汉字还是英文字母，都是用 Unicode 编码来表示的。所以，在 Java 中，char 类型变量可以存储一个中文汉字。
+
+### switch的参数
+
+- 基本数据类型：byte, short, char, int
+
+    > char，byte和short类型可以自己转化（宽化）为int类型，最后操作的还是int类型
+
+- 枚举类型：Enum  `JDK 5`
+
+- 字符串类型：String `JDK 7`
+
+    > 通过`equals()`和`hashCode()`方法来实现的，先case判定hash值，再equals对比；
 
 ### 什么是值传递和引用传递？
 
@@ -404,6 +418,19 @@ Java 允许使用 `finalize()` 方法，在垃圾收集器将对象从内存中�
 
 Java IO 相关的类，在 `java.io` 包下，具体操作分成面向字节(Byte)和面向字符(Character)两种方式。如下图所示：
 
+![Java IO×字符×字节](..\Resources\Java IO×字符×字节.png)
+
+![Java IO×操作对象](..\Resources\Java IO×操作对象.png)
+
+#### IO流的分类
+
+- 按照流的流向分，可以分为输入流和输出流；
+- 按照操作单元划分，可以划分为字节流和字符流；
+- 按照流的角色划分为节点流和处理流。
+
+- **InputStream/Reader**: 所有的输入流的基类，前者是字节输入流，后者是字符输入流。
+- **OutputStream/Writer**: 所有输出流的基类，前者是字节输出流，后者是字符输出流。
+
 ### 什么是 Java 序列化？
 
 序列化就是一种用来处理对象流的机制，所谓对象流也就是将对象的内容进行流化。
@@ -444,6 +471,8 @@ Java IO 相关的类，在 `java.io` 包下，具体操作分成面向字节(Byt
 
 ### 说说异常的分类？
 
+![Throwable](..\Resources\Throwable.png)
+
 **error 和 exception 有什么区别？CheckedException 和 RuntimeException 有什么区别？**
 
 - Error（错误），表示系统级的错误和程序不必处理的异常，是 Java 运行环境中的内部错误或者硬件问题。
@@ -477,12 +506,8 @@ Java IO 相关的类，在 `java.io` 包下，具体操作分成面向字节(Byt
 - 空指针引用：*NullPointerException*
 - 下标越界：*IndexOutOfBoundsException*
 - 类型强制转换：*ClassCastException*
-- 类查找：*ClassNotFoundException*
-- 操作数据库：*SQLException*
-- IO：*IOException*
-- 方法未找到：*NoSuchMethodException*
-- 文件查找：*FileNotFoundException*
 - 数字转换：*NumberFormatException*
+- 运算错误：*AirthmeticException*
 
 🦅 **throw 与 throws 的区别 ？**
 
@@ -536,7 +561,13 @@ Java 反射机制主要提供了以下功能：
 
 详细的测试，可以看看 [《Java 反射中，Class.forName 和ClassLoader 的区别(代码说话)》](https://blog.csdn.net/qq_27093465/article/details/52262340) 文章。
 
+### Java 对象创建的方式？
 
+1. 使用 `new` 关键字创建对象。
+2. 使用 Class 类的 newInstance 方法(反射机制)。
+3. 使用 Constructor 类的 newInstance 方法(反射机制)。
+4. 使用 clone 方法创建对象。
+5. 使用(反)序列化机制创建对象。
 
 ## 参考
 
