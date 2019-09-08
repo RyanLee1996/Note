@@ -8,6 +8,27 @@
 
 - Hashtable未继承 *AbstractMap* 类，但实现了 *Map* 接口，继承了 *Dictionary* 类；
 
+1）List
+
+- ArrayList ：Object 数组。
+- Vector ：Object 数组。
+- LinkedList ：双向链表(JDK6 之前为循环链表，JDK7 取消了循环)。
+
+2）Map
+
+- HashMap ：
+    - JDK8 之前，HashMap 由数组+链表组成的，数组是HashMap的主体，链表则是主要为了解决哈希冲突而存在的（“拉链法”解决冲突）。
+    - JDK8 以后，在解决哈希冲突时有了较大的变化，当链表长度大于阈值（默认为 8 ）时，将链表转化为红黑树，以减少搜索时间。
+- LinkedHashMap ：LinkedHashMap 继承自 HashMap，所以它的底层仍然是基于拉链式散列结构即由数组和链表或红黑树组成。另外，LinkedHashMap 在上面结构的基础上，增加了一条双向链表，使得上面的结构可以保持键值对的插入顺序。同时通过对链表进行相应的操作，实现了访问顺序相关逻辑。详细可以查看：[《LinkedHashMap 源码详细分析（JDK1.8）》](https://www.imooc.com/article/22931) 。
+- Hashtable ：数组+链表组成的，数组是 HashMap 的主体，链表则是主要为了解决哈希冲突而存在的。
+- TreeMap ：红黑树（自平衡的排序二叉树）。
+
+3）Set
+
+- HashSet ：无序，唯一，基于 HashMap 实现的，底层采用 HashMap 来保存元素。
+- LinkedHashSet ：LinkedHashSet 继承自 HashSet，并且其内部是通过 LinkedHashMap 来实现的。有点类似于我们之前说的LinkedHashMap 其内部是基于 HashMap 实现一样，不过还是有一点点区别的。
+- TreeSet ：有序，唯一，红黑树(自平衡的排序二叉树)。
+
 ## Hashcode的作用
 
 1. hashCode的存在主要是用于查找的快捷性，如Hashtable，HashMap等，hashCode是用来在散列存储结构中确定对象的存储地址的；
@@ -18,6 +39,10 @@
 # Map
 
 ![HashMap](..\Resources\map-uml.png)
+
+- Map即映射表，里面保存的是一组成对的”键值对”对象，一个映射不能包含重复的键，每个键最多只能映射到一个值，我们可以通过”键”找到该键对应的”值”。
+- dentityHashMap：使用==代替equals对“键”进行比较的HashMap
+- WeakHashMap：使用弱引用实现的HashMap，当其中的某些键值对不再被使用时会被自动GC掉
 
 ## HashMap
 
@@ -688,6 +713,201 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent, boolean evict) {
         }
 ```
 
+## LinkedHashMap
+
+### 属性
+
+```java
+public class LinkedHashMap<K,V>
+    extends HashMap<K,V>
+    implements Map<K,V>{
+    // 双向链表的头节点，使用最老的对象
+    transient LinkedHashMap.Entry<K,V> head;
+    // 双向链表的尾节点，使用最新的对象
+    transient LinkedHashMap.Entry<K,V> tail;
+    // 默认是false，则迭代时输出的顺序是插入节点的顺序。
+    // 若为true，则输出的顺序是按照访问节点的顺序。即调用过get的对象移到尾部
+    final boolean accessOrder;
+}
+```
+
+### Constructor
+
+```java
+    public LinkedHashMap() {
+        super();
+        accessOrder = false;
+    }
+    public LinkedHashMap(int initialCapacity) {
+        super(initialCapacity);
+        accessOrder = false;
+    }
+    public LinkedHashMap(int initialCapacity, float loadFactor) {
+        super(initialCapacity, loadFactor);
+        accessOrder = false;
+    }
+    public LinkedHashMap(int initialCapacity,float loadFactor, boolean accessOrder) {
+        super(initialCapacity, loadFactor);
+        this.accessOrder = accessOrder;
+    }
+    public LinkedHashMap(Map<? extends K, ? extends V> m) {
+        super();
+        accessOrder = false;
+        putMapEntries(m, false);
+    }
+```
+
+### 内部类 Entry
+
+```java
+    // 将HashMap的Node单向链表扩展为双向链表
+	static class Entry<K,V> extends HashMap.Node<K,V> {
+        Entry<K,V> before, after;
+        Entry(int hash, K key, V value, Node<K,V> next) {
+            super(hash, key, value, next);
+        }
+    }
+
+    private void transferLinks(LinkedHashMap.Entry<K,V> src,
+                               LinkedHashMap.Entry<K,V> dst) {
+        LinkedHashMap.Entry<K,V> b = dst.before = src.before;
+        LinkedHashMap.Entry<K,V> a = dst.after = src.after;
+        if (b == null)
+            head = dst;
+        else
+            b.after = dst;
+        if (a == null)
+            tail = dst;
+        else
+            a.before = dst;
+    }
+```
+
+### put
+
+***LinkedHashMap***并没有重写任何put方法。但是其重写了构建新节点的*newNode()*方法.
+*newNode()*会在***HashMap***的*putVal()*方法里被调用，*putVal()*方法会在批量插入数据*putMapEntries(Map<? extends K, ? extends V> m, boolean evict)*或者插入单个数据*public V put(K key, V value)*时被调用。
+
+```java
+	// HashMap newNode 中实现
+    Node<K,V> newNode(int hash, K key, V value, Node<K,V> next) {
+        return new Node<>(hash, key, value, next);
+    }
+	// 重写了HashMap的newNode方法；
+    Node<K,V> newNode(int hash, K key, V value, Node<K,V> e) {
+        LinkedHashMap.Entry<K,V> p =
+            new LinkedHashMap.Entry<K,V>(hash, key, value, e);
+        linkNodeLast(p);
+        return p;
+    }
+	// 链接到最后
+    private void linkNodeLast(LinkedHashMap.Entry<K,V> p) {
+        LinkedHashMap.Entry<K,V> last = tail;
+        tail = p;
+        if (last == null)
+            head = p;
+        else {
+            p.before = last;
+            last.after = p;
+        }
+    }
+```
+
+### get
+
+```java
+    public V get(Object key) {
+        Node<K,V> e;
+        if ((e = getNode(hash(key), key)) == null)
+            return null;
+        if (accessOrder)
+            afterNodeAccess(e);
+        return e.value;
+    }
+	// 将当前节点移动到节点尾部，在get,put已存在的键,replace中调用
+    void afterNodeAccess(Node<K,V> e) { // move node to last
+        LinkedHashMap.Entry<K,V> last;
+        if (accessOrder && (last = tail) != e) {
+            LinkedHashMap.Entry<K,V> p =
+                (LinkedHashMap.Entry<K,V>)e, b = p.before, a = p.after;
+            p.after = null;
+            if (b == null)
+                head = a;
+            else
+                b.after = a;
+            if (a != null)
+                a.before = b;
+            else
+                last = b;
+            if (last == null)
+                head = p;
+            else {
+                p.before = last;
+                last.after = p;
+            }
+            tail = p;
+            ++modCount;
+        }
+    }
+```
+
+### remove
+
+***LinkedHashMap***也没有重写*remove()*方法，但它重写了*afterNodeRemoval()*这个回调方法。该方法会在*removeNode()*方法中回调，*removeNode()*会在所有涉及到删除节点的方法中被调用;
+
+```java
+	//  从双向链表中删除对应的节点;
+	void afterNodeRemoval(Node<K,V> e) { // unlink
+        LinkedHashMap.Entry<K,V> p =
+            (LinkedHashMap.Entry<K,V>)e, b = p.before, a = p.after;
+        p.before = p.after = null;// 便于GC
+        if (b == null)
+            head = a;
+        else
+            b.after = a;
+        if (a == null)
+            tail = b;
+        else
+            a.before = b;
+    }
+```
+
+### contains
+
+```java
+    // 由于双向链表的存在，遍历效率比HashMap高得多
+	public boolean containsValue(Object value) {
+        for (LinkedHashMap.Entry<K,V> e = head; e != null; e = e.after) {
+            V v = e.value;
+            if (v == value || (value != null && value.equals(v)))
+                return true;
+        }
+        return false;
+    }
+```
+
+### LRU
+
+> LRU 是 Least Recently Used 的简称，即近期最少使用;
+>
+> **LRU 算法实现的关键就像它名字一样，当达到预定阈值的时候，这个阈值可能是内存不足，或者容量达到最大，找到最近最少使用的存储元素进行移除，保证新添加的元素能够保存到集合中。**
+
+```java
+    void afterNodeInsertion(boolean evict) { // hashMap中的方法传入的值大部分都为true
+        LinkedHashMap.Entry<K,V> first;
+        if (evict && (first = head) != null && removeEldestEntry(first)) {
+            K key = first.key;
+            removeNode(hash(key), key, null, false, true);
+        }
+    }
+	// LinkedHashMap 默认返回 false 则不删除节点。
+    protected boolean removeEldestEntry(Map.Entry<K,V> eldest) {
+        return false;
+    }
+```
+
+
+
 ## Hashtable
 
 ![Hashtable-UML](D:\Git Repository\Note\Resources\Hashtable-UML.png)
@@ -942,26 +1162,6 @@ public class Hashtable<K,V>
         return false;
     }
 ```
-
-## HashMap与Hashtable的异同
-
-|    区别    |              HashMap              |         Hashtable         |
-| :--------: | :-------------------------------: | :-----------------------: |
-|   index    |      (len - 1) & hash（key）      | (hash & 0x7FFFFFFF) % len |
-|  是否同步  |                否                 |            是             |
-|  默认容量  |                16                 |            11             |
-|  扩容方式  |       newCap = oldCap << 1        | newCap= (oldCap << 1) + 1 |
-|    key     |            可以为null             |        不可为null         |
-|   values   |            可以为null             |        不可为null         |
-|    基类    |            AbstractMap            |        Dictionary         |
-|    结构    | 数组+单向链表+红黑树（+双向链表） |       数组+单向链表       |
-| 桶的初始化 |         插入元素时初始化          |    对象初始化时初始化     |
-
-**相同点：**
-
-- 处理冲突的逻辑相似
-- 采用了散列表保存数据
-- 实现了Map、Cloneable、java.io.Serializable接口
 
 ## TreeMap
 
@@ -1327,34 +1527,71 @@ public class TreeMap<K,V> extends AbstractMap<K,V>
             - 左旋父节点
         - 转向其他处理方式
         
+
 ![RBTree Delete Case - 1](..\Resources\RBTree Delete Case - 1.png)
         
 - 兄弟节点 B 为黑色，P为任意颜色
         
   - BR为黑色，BL为黑色
-        
-              - 将兄弟节点B改为红色；此时经过P的路径都少了一个黑色
-              
-              - 将P 看作新的 N 继续处理
-                
+    
+          - 将兄弟节点B改为红色；此时经过P的路径都少了一个黑色
+          - 将P 看作新的 N 继续处理
           
-      ![RBTree Delete Case - 4](..\Resources\RBTree Delete Case - 4.png)
-        
+          
+          ![RBTree Delete Case - 4](..\Resources\RBTree Delete Case - 4.png)
+      
       - BR为黑色，BL为红色
           - 交换B 和 BL的颜色
             - 右旋节点B
             - 转为下方的处理方式
             
+        
         ![RBTree Delete Case - 3](..\Resources\RBTree Delete Case - 3.png)
-          
+        
       - BR为红色，BL为任意颜色
            - 将兄弟节点B 置为 父节点P 的颜色；
              - 将父节点 置为 黑色；
-        	   - 将 BR 置为黑色；
+          	   - 将 BR 置为黑色；
              - 左旋父节点 P
              ![RBTree Delete Case - 2](..\Resources\RBTree Delete Case - 2.png)       
 
 > JDK 1.8的HashMap的红黑树TreenNode的*balanceDeletion*以及TreeMap的*fixAfterDeletion*均采用以上逻辑处理
+
+## Map总结
+
+**HashMap**
+
+- 存储结构为数组 + 单向链表 + 红黑树（树内部维护了一个双向链表）；
+- 默认容量为16；
+- 扩容方式为 *n = 2n*;
+- 继承 *AbstractMap* 类；
+- 非线程安全；
+- *index = (n - 1) & (hash ^ (hash >>> 16));*
+- key与vaule均可以为null；
+- hash桶在插入元素时初始化；
+
+**LinkedHashMap**
+
+- 基于HashMap实现；额外维护了一个双向链表；
+- 通过构造参数 accessOrder 来指定双向链表是否在元素被访问后改变其在双向链表中的位置；
+    - 当accessOrder为默认值false时，元素的遍历顺序与元素的插入顺序相同
+
+**Hashtable**
+
+- 存储结构为数组 + 单向链表；
+- 默认容量为11；
+- 扩容方式为 *n = 2n + 1*;
+- 继承 *Dictionary* 类；
+- 线程安全；
+- *index =  (hash & 0x7FFFFFFF) % n*；
+- key与value均不可以为null；
+- hash桶在对象初始化时初始化；
+
+**TreeMap**
+
+- 存储结构为红黑树；
+- 实现了 *NavigableMap* 接口；
+- 该映射根据其键的自然顺序进行排序，或者根据创建映射时提供的 Comparator进行排序
 
 # List
 
@@ -2044,6 +2281,7 @@ public class Vector<E>
 - 基于双向队列（链表）实现，实现了Deque接口
 - 查询速度较慢，越接近中心越慢；
 - 插入和删除效率较高，但是插入和删除也存在寻址，所以只有接近头尾插时，效率才高；
+- 使用 for 循环遍历效率特别低；
 
 **Vector**
 
@@ -2063,12 +2301,176 @@ public class Vector<E>
 
 - 当然，绝大数业务的场景下，使用 ArrayList 就够了。主要是，注意好避免 ArrayList 的扩容，以及非顺序的插入。
 
-## Set
+# Set
 
+![Set-UML](..\Resources\Set-UML.png)
 
+- Set即集合，里面保存的是一堆不可重复的元素，使用equals方法来确保对象的唯一性。
+
+## HashSet
+
+![HashSet-UML](..\Resources\HashSet-UML.png)
+
+### 属性
+
+```java
+    // 可以看出HashSet实际基于HashMap实现；
+	private transient HashMap<E,Object> map;
+    // Dummy value to associate with an Object in the backing Map
+    private static final Object PRESENT = new Object();// 对象关联的虚值
+```
+
+### Constructor
+
+```java
+    public HashSet() {
+        map = new HashMap<>();
+    }
+    public HashSet(Collection<? extends E> c) {
+        map = new HashMap<>(Math.max((int) (c.size()/.75f) + 1, 16));
+        addAll(c);
+    }
+    public HashSet(int initialCapacity) {
+        map = new HashMap<>(initialCapacity);
+    }
+    public HashSet(int initialCapacity, float loadFactor) {
+        map = new HashMap<>(initialCapacity, loadFactor);
+    }
+	// dummy是一个被忽略的参数，只用来区分调用HashMap/LinkedHashMap的构造器；
+	// 使用default修饰，实际是给予LinkedHashSet使用的；
+    HashSet(int initialCapacity, float loadFactor, boolean dummy) {
+        map = new LinkedHashMap<>(initialCapacity, loadFactor);
+    }
+```
+
+### Method
+
+大部分方法都直接基于HashMap的实现；
+
+```java
+    public boolean add(E e) {
+        return map.put(e, PRESENT)==null;
+    }
+	// 该方法在AbstractCollection中
+    public boolean addAll(Collection<? extends E> c) {
+        boolean modified = false;
+        for (E e : c)
+            if (add(e))
+                modified = true;
+        return modified;
+    }
+    public boolean remove(Object o) {
+        return map.remove(o)==PRESENT;
+    }
+	// 该方法在AbstractSet中
+    public boolean removeAll(Collection<?> c) {
+        Objects.requireNonNull(c);
+        boolean modified = false;
+
+        if (size() > c.size()) {
+            for (Iterator<?> i = c.iterator(); i.hasNext(); )
+                modified |= remove(i.next());
+        } else {
+            for (Iterator<?> i = iterator(); i.hasNext(); ) {
+                if (c.contains(i.next())) {
+                    i.remove();
+                    modified = true;
+                }
+            }
+        }
+        return modified;
+    }
+    public boolean contains(Object o) {
+        return map.containsKey(o);
+    }
+	// 该方法在AbstractCollection中
+    public boolean containsAll(Collection<?> c) {
+        for (Object e : c)
+            if (!contains(e))
+                return false;
+        return true;
+    }
+```
+
+## LinkedHashSet
+
+- 继承于HashSet，实现了调用生成LinkedHashMap的构造器;
+- 内部结构基于LinkedHashMap;
+
+### 源码
+
+```java
+public class LinkedHashSet<E>
+    extends HashSet<E>
+    implements Set<E>, Cloneable, java.io.Serializable {
+    private static final long serialVersionUID = -2851667679971038690L;
+    public LinkedHashSet() {
+        super(16, .75f, true);
+    }
+    public LinkedHashSet(int initialCapacity) {
+        super(initialCapacity, .75f, true);
+    }
+    public LinkedHashSet(int initialCapacity, float loadFactor) {
+        super(initialCapacity, loadFactor, true);
+    }
+    public LinkedHashSet(Collection<? extends E> c) {
+        super(Math.max(2*c.size(), 11), .75f, true);
+        addAll(c);
+    }
+
+    @Override
+    public Spliterator<E> spliterator() {
+        return Spliterators.spliterator(this, Spliterator.DISTINCT | Spliterator.ORDERED);
+    }
+}
+```
+
+## TreeSet
+
+- 存储使用TreeMap；
+
+```java
+public class TreeSet<E> extends AbstractSet<E>
+    implements NavigableSet<E>, Cloneable, java.io.Serializable{
+    private transient NavigableMap<E,Object> m;// 实际基于NavigableMap的实现类
+
+    // Dummy value to associate with an Object in the backing Map
+    private static final Object PRESENT = new Object();// 对象关联的虚值
+}
+```
+
+### Constructor
+
+```java
+	// 可以看出默认情况下基于TreeMap的实现
+	public TreeSet() {
+        this(new TreeMap<E,Object>());
+    }
+    public TreeSet(Collection<? extends E> c) {
+        this();
+        addAll(c);
+    }
+    public TreeSet(Comparator<? super E> comparator) {
+        this(new TreeMap<>(comparator));
+    }
+    public TreeSet(SortedSet<E> s) {
+        this(s.comparator());
+        addAll(s);
+    }
+	// 使用default修饰；
+    TreeSet(NavigableMap<E,Object> m) {
+        this.m = m;
+    }
+```
+
+## Set总结
+
+主要Set实现类实际都直接使用对应的Map类作用存储结构，将存储的对象作为Map的键，使用一个*new Object()*作为键对应的值；
 
 ## 参考
 
 [Programmer Help × JDK1.8 HashMap Source Code Analysis](https://programmer.help/blogs/jdk1.8-hashmap-source-code-analysis.html)
 
 [简书 × TreeMap源码解析](https://www.jianshu.com/p/fc5e16b5c674)
+
+[CSDN × LinkedHashMap源码解析（JDK8）](https://blog.csdn.net/zxt0601/article/details/77429150)

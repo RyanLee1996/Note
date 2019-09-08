@@ -304,7 +304,7 @@ ConcurrentHashMap 是线程安全的 HashMap 的实现。主要区别如下：
 
     - 队列允许先进先出（FIFO）检索元素，但并非总是这样。
 - Deque 接口允许从两端检索元素。
-    
+  
 - 栈与队列很相似，但它允许对元素进行后进先出（LIFO）进行检索。
 
     - Stack 是一个扩展自 Vector 的类，而 Queue 是一个接口。
