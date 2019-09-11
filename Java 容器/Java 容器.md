@@ -1571,7 +1571,7 @@ public class TreeMap<K,V> extends AbstractMap<K,V>
 - 非线程安全；
 - *index = (n - 1) & (hash ^ (hash >>> 16));*
 - key与vaule均可以为null；
-- hash桶在插入元素时初始化；
+- hash桶懒加载； 
 
 **LinkedHashMap**
 

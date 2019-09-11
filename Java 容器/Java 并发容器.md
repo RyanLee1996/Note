@@ -12,8 +12,6 @@ CAS有**3个**操作数
 - **旧的预期值A**
 - **要修改的新值B**
 
-**当且仅当预期值A和内存值V相同时，将内存值V修改为B，否则什么都不做**
-
 > 当多个线程尝试使用CAS同时更新同一个变量时，只有其中一个线程能更新变量的值(**A和内存值V相同时，将内存值V修改为B)**，而其它线程都失败，失败的线程**并不会被挂起**，而是被告知这次竞争中失败，并可以再次尝试**(否则什么都不做)**
 
 ## volatile
@@ -285,7 +283,6 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
 #### TreeBin
 
 - 插入时，不加锁，直到插入完成需要重新平衡时，获取CAS平时
-- 
 
 ```java
 // 用于封装TreeNode，也就是说，ConcurrentHashMap的红黑树存放的是TreeBin，而不是treeNode。  
@@ -659,15 +656,25 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
 
 ### put
 
-- *key & vaule* 不能为*null*；
-- 首先对于每一个放入的值，首先利用spread方法对key的hashcode进行一次hash计算；
-- 如果当前table数组还未初始化，先将table数组进行初始化操作；
-- 如果这个位置是null的，那么使用CAS操作直接放入；
-- 如果这个位置存在结点，说明发生了hash碰撞，首先判断这个节点的类型。如果该节点fh==MOVED(代表forwardingNode,数组正在进行扩容)的话，说明正在进行扩容；
-- 如果是链表节点（fh>0）,则得到的结点就是hash值相同的节点组成的链表的头节点。需要依次向后遍历确定这个新加入的值所在位置。如果遇到hash值与key值都与新加入节点是一致的情况，则只需要更新value值即可。否则依次向后遍历，直到链表尾插入这个结点；
-- 如果这个节点的类型是TreeBin的话，直接调用红黑树的插入方法进行插入新的节点；
-- 插入完节点之后再次检查链表长度，如果长度大于8，就把这个链表转换成红黑树；
-- 对当前容量大小进行检查，如果超过了临界值（实际大小*加载因子）就需要扩容。
+1. *key & vaule* 不允许为*null*，获取扰动后的hash值；
+
+2. 判断`hash桶`是否初始化，未初始化调用*initTable*初始化；
+
+3. 以*index = (n - 1) & hash*获取头节点；
+
+    - 头节点为空，以***CAS***方式插入节点；
+
+    - 头节点为`ForwardingNode`，表明正在扩容，调用*helpTransfer*协助扩容；
+
+    - 头节点存在且未在扩容，使用***synchronized***锁住头节点；
+
+        - 如果当前为链表***Node***: 遍历链表，判断是覆盖旧值还是插入新值，并记录链表长度；
+
+        - 如果当前为红黑树***TreeBin***: 以红黑树方式*put*键值对，如果是插入新值，先插入，然后竞争写锁，重新平衡红黑树，释放锁；
+
+    - 释放***synchronized***锁，判断链表长度是否超过树化阀值，如果超过，调用*treeifyBin*判断是因为扩容还是树化；如果存在旧值（即是覆盖操作），返回旧值；
+    
+4. 如果是插入，调用*addCount*重新统计键值对数量；
 
 ```java
     public V put(K key, V value) {
@@ -750,6 +757,14 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
 
 ### initTable
 
+- 获取***sizeCtl***值保存，然后判断***sizeCtl***是否小于0
+    - 小于0，即当前有线程在初始化，调用*Thread.yield()*让出线程；
+    - 大于等于0，使用***CAS***将***sizeCtl***设置为 -1 锁住；
+        - 双检锁再判断是否未初始化，如果原***sizeCtl***为0（即未设置初始化容量），使用默认容量16；
+        - 初始化hash桶；
+        - 重新计算扩容阀值；
+        - 释放锁退出；
+
 ```java
     private final Node<K,V>[] initTable() {
         Node<K,V>[] tab; int sc;
@@ -776,7 +791,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
                         sc = n - (n >>> 2);
                     }
                 } finally {
-                    sizeCtl = sc;
+                    sizeCtl = sc;// 释放锁
                 }
                 break;
             }
@@ -787,7 +802,47 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
 
 ### transfer
 
+- 通过*NCPU*判断每次迁移的*Node*个数`stride`，如果小于16，再设置为16；
 
+- 判断`nextTab`临时桶是否存在，不存在则新建hash桶，容量为旧桶的两倍，并赋予`nextTab`；
+
+- 以`nextTab`初始化一个***ForwardingNode***；
+
+- 逆序更新`index`；
+
+    - 判断`index`是否仍在边界`bound`内，或已完成迁移`finishing`；
+    - 判断下一个迁移位置`transferIndex`<=0，即是否已经没有需要迁移的hash桶；
+    - 根据`transferIndex`和`stride`，更新边界`bound`和当前迁移位置`index`；
+
+- 以*i < 0 || i >= n || i + n >= nextn*判断是否已迁移完成
+
+    - i<0，说明已经遍历完旧的hash桶
+
+    - i >= n，这个代码块内有一处将，`index`设置为n，
+
+    - 以***CAS***方式将***sizeCtl***设置为***sizeCtl + 1***
+
+        - 因为调用*transfer*方法的如*tryPresize/addCount/helpTransfer*方法，协助扩容线程都会将***sizeCtl***设置为***sizeCtl - 1***
+
+        - 如果*sc == (resizeStamp(n) << RESIZE_STAMP_SHIFT) + 2*；即为最后一个结束的线程
+
+            > 因为如*tryPresize/addCount*方法第一个扩容的线程都会设置将***sizeCtl***设置为*(resizeStamp(n) << RESIZE_STAMP_SHIFT) + 2)*
+
+        - 最后一个结束的后续将新桶`nextTab`赋予hash桶`table`，并更新新桶为null，更新扩容阀值`sizeCtl`为新容量的0.75倍；
+
+- 如果当前节点为空，不需要复制，将该节点以CAS方式赋予***ForwardingNode***；
+
+- 如果当前节点为***ForwardingNode***，即已被处理，跳过
+
+- 如果不为空，且也未被处理，则开始使用***synchronized***锁住头节点，开始迁移
+
+  - 双检锁再判断节点是否已被改动；
+  - 如果当前为链表；以*hash & n == 0*的方式将链表处理成两个反序排列的链表（有一部分没被反序），*hash & n == 0*的为低位节点，不等的高位节点；
+  - 如果当前为红黑树；以和红黑树同样的方式处理成两个***TreeNode***，处理过程中记录两个红黑树的节点数
+      - 如果节点数小于等于链表化阀值`UNTREEIFY_THRESHOLD`，调用*untreeify*方法链表化
+      - 否则调用*new TreeBin(TreeNode n)*构建为红黑树
+  - 将低位节点放置在新桶`index`，高位节点放置到`index + n`
+  - 将当前节点赋予***ForwardingNode***，处理完成；
 
 ```java
     // 负责迁移node节点
@@ -1005,8 +1060,6 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
     }
 ```
 
-
-
 ### treeifyBin
 
 ```java
@@ -1041,6 +1094,34 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
 
 ### tryPresize
 
+> 该方法只有*treeifyBin*和*putAll*调用
+
+- 计算扩容目标容量`cap`
+
+- 取得`sizeCtl`，判断是否已在扩容；
+
+    - 如果当前桶尚未初始化
+
+        - 以***CAS***方式将`SIZECTL`置为 -1，表示正在进行初始化
+        - 双检索后，初始化桶，更新桶和计算新的扩容阀值
+        - 将扩容阀值赋予`sizeCtl`，即释放锁
+
+    - 如果目标容量`cap`小于扩容阀值，或者容量超过最大限制时，不需要扩容
+
+    - 如果需要扩容
+
+        - 如果已有其他线程在扩容，判断是否扩容完成，未完成则协助扩容，将`SIZECTL`设置为`SIZECTL + 1`
+
+            > 这里我不懂怎么会发生的???
+            >
+            > while ((sc = sizeCtl) >= 0){
+            >
+            > ​	if (sc < 0) {}
+            >
+            > }
+
+        - 如果是第一个扩容，将`SIZECTL`设置为`resizeStamp(n) << RESIZE_STAMP_SHIFT) + 2`
+
 ```java
     private final void tryPresize(int size) {
         // 计算扩容的目标size
@@ -1071,7 +1152,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
                 break;
             else if (tab == table) {// 需要扩容
                 int rs = resizeStamp(n);
-                if (sc < 0) {// sc<0表示，已经有其他线程正在扩容
+                if (sc < 0) {// sc<0表示，已经有其他线程正在扩容。但是怎么发生的？按理说
                     Node<K,V>[] nt;
                // 1. (sc >>> RESIZE_STAMP_SHIFT) != rs ：扩容线程数 > MAX_RESIZERS-1
                // 2. sc == rs + 1 和 sc == rs + MAX_RESIZERS ：表示什么？？？
@@ -1096,6 +1177,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
 ### addCount
 
 ```java
+// 如果<0，不检查调整大小，如果<= 1，只检查是否无竞争
 private final void addCount(long x, int check) {
      CounterCell[] as; long b, s;
   
@@ -1115,7 +1197,7 @@ private final void addCount(long x, int check) {
              return;
          s = sumCount();
      }
-  	//如果check值大于等于0 则需要检验是否需要进行扩容操作
+  	//如果check值大于等于0 则需要检验是否需要进行扩容操作，后面和tryPresize一个逻辑；
      if (check >= 0) {
          Node<K,V>[] tab, nt; int n, sc;
        	// 当条件满足的时候开始扩容
@@ -1269,7 +1351,18 @@ private final void fullAddCount(long x, boolean wasUncontended) {
 
 ### remove
 
-删除的node节点的next依然指着下一个元素。此时若有一个遍历线程正在遍历这个已经删除的节点，这个遍历线程依然可以通过next属性访问下一个元素。从遍历线程的角度看，他并没有感知到此节点已经删除了，这说明了ConcurrentHashMap提供了弱一致性的迭代器。
+> 删除的node节点的next依然指着下一个元素。此时若有一个遍历线程正在遍历这个已经删除的节点，这个遍历线程依然可以通过next属性访问下一个元素。从遍历线程的角度看，他并没有感知到此节点已经删除了，这说明了ConcurrentHashMap提供了弱一致性的迭代器。
+
+-  获取扰动后的hash
+- 如果桶未初始化或`(n - 1) & hash`位置不存在节点，结束
+- 如果当前节点为***ForwardingNode***，协助扩容
+- 如果当前节点存在且未在扩容，使用***synchronized***锁住头节点
+    - 双检锁判断节点是否已被改动；
+    - 当前节点为链表：遍历链表，找到便删除节点，删除的头节点便再更新头节点；
+    - 当前节点为红黑树：
+        - 使用*findTreeNode*查找节点
+        - 找到再用*removeTreeNode*移除节点
+        - 如果长度太短，链表化节点，更新头节点
 
 ```java
     public V remove(Object key) {
@@ -1378,6 +1471,19 @@ private final void fullAddCount(long x, boolean wasUncontended) {
         return null;
     }
 ```
+
+### 总结
+
+- 和JDK 1.8的HashMap一样的存储结构，采用数组+链表+红黑树；链表转红黑树的逻辑也和HashMap一致；
+- 默认容量为16，扩容为*n = 2n*；
+
+- hash桶懒加载； 
+
+- 不允许Key和Value为null；
+
+- 采用了***CAS***+***synchronized***的方式保证并发情况下的数据同步，锁粒度小，也保证了操作的原子性； 
+
+- 多线程无锁扩容的关键就是通过***CAS***设置`sizeCtl`与`transferIndex`变量，协调多个线程对table数组中的Node进行迁移；
 
 
 
