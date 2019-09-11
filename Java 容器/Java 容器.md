@@ -88,29 +88,29 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 
 ```java
     public HashMap() {
-        //默认构造函数，赋值加载因子为默认的0.75f, hash桶在put时初始化
+        // 默认构造函数，赋值加载因子为默认的0.75f, hash桶在put时初始化
         this.loadFactor = DEFAULT_LOAD_FACTOR; // all other fields defaulted
     }
     public HashMap(int initialCapacity) {
         this(initialCapacity, DEFAULT_LOAD_FACTOR);
     }
-    //同时指定初始化容量以及加载因子，用的很少，一般不会修改loadFactor
+    // 同时指定初始化容量以及加载因子，用的很少，一般不会修改loadFactor
     public HashMap(int initialCapacity, float loadFactor) {
-        //初始化容量处理
+        // 初始化容量处理
         if (initialCapacity < 0)
             throw new IllegalArgumentException("Illegal initial capacity: " +
                                                initialCapacity);
         if (initialCapacity > MAXIMUM_CAPACITY)
             initialCapacity = MAXIMUM_CAPACITY;
-        //加载因子判断
+        // 加载因子判断
         if (loadFactor <= 0 || Float.isNaN(loadFactor))
             throw new IllegalArgumentException("Illegal load factor: " +
                                                loadFactor);
         this.loadFactor = loadFactor;
-        //设置阈值为初始化容量的2的n次方的值
+        // 设置阈值为初始化容量的2的n次方的值
         this.threshold = tableSizeFor(initialCapacity);
     }
-    //新建一个哈希表，同时将另一个map m 里的所有元素加入表中
+    // 新建一个哈希表，同时将另一个map m 里的所有元素加入表中
     public HashMap(Map<? extends K, ? extends V> m) {
         this.loadFactor = DEFAULT_LOAD_FACTOR;
         putMapEntries(m, false);
@@ -121,16 +121,16 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 
 
 ```java
-//用来保证hash桶数量一定为2的n次方，哈希桶的实际容量 length。 返回值一般会>=cap 
+// 用来保证hash桶数量一定为2的n次方，哈希桶的实际容量 length。 返回值一般会>=cap 
 static final int tableSizeFor(int cap) {
-	//经过下面的 或 和位移 运算， n最终各位都是1。‘|’为同为0时为0， 其他为1;
+	// 经过下面的 或 和位移 运算， n最终各位都是1。‘|’为同为0时为0， 其他为1;
     int n = cap - 1;
     n |= n >>> 1;
     n |= n >>> 2;
     n |= n >>> 4;
     n |= n >>> 8;
     n |= n >>> 16;
-    //判断n是否越界，返回 2的n次方作为 table（哈希桶）的阈值
+    // 判断n是否越界，返回 2的n次方作为 table（哈希桶）的阈值
     return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
 }
 ```
@@ -139,7 +139,7 @@ static final int tableSizeFor(int cap) {
 ### 扰动函数
 
 ```java
-//可以看出HashMap的key可以为null
+// 可以看出HashMap的key可以为null
 static final int hash(Object key) {
     int h;
     // key.hashCode()：返回散列值也就是hashcode
@@ -152,7 +152,7 @@ static final int hash(Object key) {
 ### 内部类 Node
 
 ```java
-//单链表    
+// 单链表    
 static class Node<K,V> implements Map.Entry<K,V> {
     final int hash;// 存放的hash()的值
     final K key;
@@ -170,7 +170,7 @@ static class Node<K,V> implements Map.Entry<K,V> {
 ### 内部类 TreeNode
 
 ```java
-//红黑树
+// 红黑树
 static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
     TreeNode<K,V> parent;  // 父节点
     TreeNode<K,V> left;	   // 左节点
@@ -1536,22 +1536,25 @@ public class TreeMap<K,V> extends AbstractMap<K,V>
     
           - 将兄弟节点B改为红色；此时经过P的路径都少了一个黑色
           - 将P 看作新的 N 继续处理
-          
-          
-          ![RBTree Delete Case - 4](..\Resources\RBTree Delete Case - 4.png)
+      
+      
+      ​    
+      ​    ![RBTree Delete Case - 4](..\Resources\RBTree Delete Case - 4.png)
       
       - BR为黑色，BL为红色
           - 交换B 和 BL的颜色
             - 右旋节点B
             - 转为下方的处理方式
             
+          
+          
         
         ![RBTree Delete Case - 3](..\Resources\RBTree Delete Case - 3.png)
         
       - BR为红色，BL为任意颜色
            - 将兄弟节点B 置为 父节点P 的颜色；
              - 将父节点 置为 黑色；
-          	   - 将 BR 置为黑色；
+             	 	   - 将 BR 置为黑色；
              - 左旋父节点 P
              ![RBTree Delete Case - 2](..\Resources\RBTree Delete Case - 2.png)       
 
