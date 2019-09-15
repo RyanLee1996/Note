@@ -155,7 +155,7 @@ public class SimpleController implements Controller{
         ModelAndView modelAndView = new ModelAndView();
         /*添加需要返回的数据对象*/
         modelAndView.addObject("Object",list);
-        /*制定仕途*/
+        /*指定视图*/
         modelAndView.setViewName("/WEB-INF/jsp/simple.jsp");
         return modelAndView;
     }
