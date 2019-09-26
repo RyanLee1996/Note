@@ -1,10 +1,10 @@
-# Spring × 面试题
+# Spring 
 
 ## Spring Framework 中有多少个模块，它们分别是什么？
 
-如下是`4.2.x`版本的 Spring Framework 的模块图：
+如下是`4.3.x`版本的 Spring Framework 的模块图：
 
-![Spring Framework](https://docs.spring.io/spring/docs/4.2.x/spring-framework-reference/html/images/spring-overview.png)
+![Spring Framework](https://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/html/images/spring-overview.png)
 
 我们按照一个一个分块来说。
 
