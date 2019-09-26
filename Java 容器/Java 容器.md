@@ -713,6 +713,27 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent, boolean evict) {
         }
 ```
 
+## 总结
+**HashMap**的存储结构为`数组Node[]`+`单向链表Node`+`红黑树TreeNode`；
+
+默认容量为`16`，容器hash桶使用`懒加载`方式，扩容方式为`newCap = oldCap << 1`；
+
+默认加载因子为`0.75f`，扩容阀值为`容量 * 加载因子`，扩容时阀值也为2倍：`newThr = oldThr << 1`;
+
+当链表长度超过8且hash桶容量小于64时，hash桶扩容；
+
+当链表长度超过8且hash桶容量大于64时，链表红黑树化；
+
+hash计算方式为 `hash = key.hashCode() ^ (key.hashCode() >>> 16)`;
+
+因为hash计算时对null做了特殊处理，HashMap允许key与value为null；
+
+index计算方式为 `index = (table.length - 1) & hash`;
+
+扩容为创建新容量的hash桶，并复制迁移原hash桶的节点；
+
+扩容时，将单节点以`index = (newCap - 1) & hash`放入新桶中；将链表以`hash & oldCap == 0`保留原顺序分为两个节点，符合条件的在原位置`index`，不相等的放置到`index + oldCap`；将红黑树也以`hash & oldCap == 0`的方式分为两个Node，同时Node长度小于等于6的解除红黑树，转为链表，长度大于6的仍然构造为红黑树；
+
 ## LinkedHashMap
 
 ### 属性
@@ -1836,7 +1857,7 @@ public class LinkedList<E>
 ### 内部类 Node
 
 ```java
-    //单向链表
+    //双向链表
 	private static class Node<E> {
         E item;
         Node<E> next;
