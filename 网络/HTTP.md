@@ -66,11 +66,19 @@ HTTP 协议，是 Hyper Text Transfer Protocol（超文本传输协议）的缩�
 
 ### **HTTP 请求格式**
 
-- 请求行：用来说明请求类型，要访问的资源以及所使用的 HTTP 版本。
+![HTTP请求报文](https://pic002.cnblogs.com/images/2012/426620/2012072810301161.png)
+
+- 请求行：
+    - 请求方法：如PUT、POST
+    - 请求URL：URL地址
+    - 协议版本：即HTTP协议版本号；
 - 请求头部：紧接着请求行（即第一行）之后的部分，用来说明服务器要使用的附加信息从第二行起为请求头部。
-    - HOST ，将指出请求的目的地。
-    - User-Agent ，服务器端和客户端脚本都能访问它,它是浏览器类型检测逻辑的重要基础。该信息由你的浏览器来定义，并且在每个请求中自动发送等等
-    - …
+    - HOST ，请求的主机名，允许多个域名同处一个IP地址，即虚拟主机。
+    - User-Agent ，产生请求的浏览器类型。服务器端和客户端脚本都能访问它,它是浏览器类型检测逻辑的重要基础。该信息由你的浏览器来定义，并且在每个请求中自动发送等等
+    - Accept：客户端可识别的内容类型列表。
+    - **Cookie**：Cookie信息；
+    - **Referer**：表示该请求从哪个URL发来的；
+    - Content-Type：请求的数据类型
 - 空行：请求头部后面的空行是必须的。
 - 请求数据：也叫主体，可以添加任意的其他数据。
 
@@ -121,6 +129,8 @@ HTTP 协议，是 Hyper Text Transfer Protocol（超文本传输协议）的缩�
 - 3×× : 重定向，要完成请求必须进行进一步处理
     - 301 Moved Permanently // 永久重定向,使用域名跳转
     - 302 Found // 临时重定向,未登陆的用户访问用户中心重定向到登录页面
+    - **303 See Other**：重定向到其它的页面，目标的URL通过响应报文头在Location
+    - **304 Not Modified**：表示请求的资源未修改，请客户端使用本地缓存
 - 4×× : 客户端错误，请求不合法
     - 400 Bad Request // 客户端请求有语法错误，不能被服务器所理解
     - 401 Unauthorized // 请求未经授权，这个状态代码必须和 WWW-Authenticate 报头域一起使用
@@ -188,3 +198,7 @@ HTTP 协议，是 Hyper Text Transfer Protocol（超文本传输协议）的缩�
     >     > UDP 报文的最大长度为 512 字节。
     >
     > - 不用经过 TCP 三次握手，这样 DNS 服务器负载更低，响应更快。虽然从理论上说，客户端也可以指定向 DNS 服务器查询的时候使用 TCP ，但事实上，很多 DNS 服务器进行配置的时候，仅支持 UDP 查询包。
+
+[WIKIPEDIA × List of HTTP header fields](https://en.wikipedia.org/wiki/List_of_HTTP_header_fields)
+
+[MDN × HTTP消息](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Messages)
