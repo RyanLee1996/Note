@@ -281,6 +281,1139 @@
 		<property name="parallelBufferSize" value="${canal.instance.parser.parallelBufferSize:256}" />
 	</bean>
 
+	<bean id="eventParser3" parent="baseEventParser">
+		<property name="destination" value="${canal.instance.destination}" />
+		<property name="slaveId" value="${canal.instance.mysql.slaveId:0}" />
+		<!-- 心跳配置 -->
+		<property name="detectingEnable" value="${canal.instance.detecting.enable:false}" />
+		<property name="detectingSQL" value="${canal.instance.detecting.sql}" />
+		<property name="detectingIntervalInSeconds" value="${canal.instance.detecting.interval.time:5}" />
+		<property name="haController">
+			<bean class="com.alibaba.otter.canal.parse.ha.HeartBeatHAController">
+				<property name="detectingRetryTimes" value="${canal.instance.detecting.retry.threshold:3}" />
+				<property name="switchEnable" value="${canal.instance.detecting.heartbeatHaEnable:false}" />
+			</bean>
+		</property>
+
+		<property name="alarmHandler" ref="alarmHandler" />
+
+		<!-- 解析过滤处理 -->
+		<property name="eventFilter">
+			<bean class="com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter" >
+				<constructor-arg index="0" value="${canal.instance.filter.regex:.*\..*}" />
+			</bean>
+		</property>
+
+		<property name="eventBlackFilter">
+			<bean class="com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter" >
+				<constructor-arg index="0" value="${canal.instance.filter.black.regex:}" />
+				<constructor-arg index="1" value="false" />
+			</bean>
+		</property>
+		<!-- 最大事务解析大小，超过该大小后事务将被切分为多个事务投递 -->
+		<property name="transactionSize" value="${canal.instance.transaction.size:1024}" />
+
+		<!-- 网络链接参数 -->
+		<property name="receiveBufferSize" value="${canal.instance.network.receiveBufferSize:16384}" />
+		<property name="sendBufferSize" value="${canal.instance.network.sendBufferSize:16384}" />
+		<property name="defaultConnectionTimeoutInSeconds" value="${canal.instance.network.soTimeout:30}" />
+
+		<!-- 解析编码 -->
+		<!-- property name="connectionCharsetNumber" value="${canal.instance.connectionCharsetNumber:33}" /-->
+		<property name="connectionCharset" value="${canal.instance.connectionCharset:UTF-8}" />
+
+		<!-- 解析位点记录 -->
+		<property name="logPositionManager">
+			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+		</property>
+
+		<!-- failover切换时回退的时间 -->
+		<property name="fallbackIntervalInSeconds" value="${canal.instance.fallbackIntervalInSeconds:60}" />
+
+		<!-- 解析数据库信息 -->
+		<property name="masterInfo">
+			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
+				<property name="address" value="${canal.instance.master3.address}" />
+				<property name="username" value="${canal.instance.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
+				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
+				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
+			</bean>
+		</property>
+		<property name="standbyInfo">
+			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
+				<property name="address" value="${canal.instance.standby3.address}" />
+				<property name="username" value="${canal.instance.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
+				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
+				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
+			</bean>
+		</property>
+
+		<!-- 解析起始位点 -->
+		<property name="masterPosition">
+			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
+				<property name="journalName" value="${canal.instance.master3.journal.name}" />
+				<property name="position" value="${canal.instance.master3.position}" />
+				<property name="timestamp" value="${canal.instance.master3.timestamp}" />
+				<property name="gtid" value="${canal.instance.master3.gtid}" />
+			</bean>
+		</property>
+		<property name="standbyPosition">
+			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
+				<property name="journalName" value="${canal.instance.standby3.journal.name}" />
+				<property name="position" value="${canal.instance.standby3.position}" />
+				<property name="timestamp" value="${canal.instance.standby3.timestamp}" />
+				<property name="gtid" value="${canal.instance.standby3.gtid}" />
+			</bean>
+		</property>
+		<property name="filterQueryDml" value="${canal.instance.filter.query.dml:false}" />
+		<property name="filterQueryDcl" value="${canal.instance.filter.query.dcl:false}" />
+		<property name="filterQueryDdl" value="${canal.instance.filter.query.ddl:false}" />
+		<property name="useDruidDdlFilter" value="${canal.instance.filter.druid.ddl:true}" />
+		<property name="filterRows" value="${canal.instance.filter.rows:false}" />
+		<property name="filterTableError" value="${canal.instance.filter.table.error:false}" />
+		<property name="supportBinlogFormats" value="${canal.instance.binlog.format}" />
+		<property name="supportBinlogImages" value="${canal.instance.binlog.image}" />
+
+		<!-- parallel parser -->
+		<property name="parallel" value="${canal.instance.parser.parallel:true}" />
+		<property name="parallelThreadSize" value="${canal.instance.parser.parallelThreadSize}" />
+		<property name="parallelBufferSize" value="${canal.instance.parser.parallelBufferSize:256}" />
+	</bean>
+
+	<bean id="eventParser4" parent="baseEventParser">
+		<property name="destination" value="${canal.instance.destination}" />
+		<property name="slaveId" value="${canal.instance.mysql.slaveId:0}" />
+		<!-- 心跳配置 -->
+		<property name="detectingEnable" value="${canal.instance.detecting.enable:false}" />
+		<property name="detectingSQL" value="${canal.instance.detecting.sql}" />
+		<property name="detectingIntervalInSeconds" value="${canal.instance.detecting.interval.time:5}" />
+		<property name="haController">
+			<bean class="com.alibaba.otter.canal.parse.ha.HeartBeatHAController">
+				<property name="detectingRetryTimes" value="${canal.instance.detecting.retry.threshold:3}" />
+				<property name="switchEnable" value="${canal.instance.detecting.heartbeatHaEnable:false}" />
+			</bean>
+		</property>
+
+		<property name="alarmHandler" ref="alarmHandler" />
+
+		<!-- 解析过滤处理 -->
+		<property name="eventFilter">
+			<bean class="com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter" >
+				<constructor-arg index="0" value="${canal.instance.filter.regex:.*\..*}" />
+			</bean>
+		</property>
+
+		<property name="eventBlackFilter">
+			<bean class="com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter" >
+				<constructor-arg index="0" value="${canal.instance.filter.black.regex:}" />
+				<constructor-arg index="1" value="false" />
+			</bean>
+		</property>
+		<!-- 最大事务解析大小，超过该大小后事务将被切分为多个事务投递 -->
+		<property name="transactionSize" value="${canal.instance.transaction.size:1024}" />
+
+		<!-- 网络链接参数 -->
+		<property name="receiveBufferSize" value="${canal.instance.network.receiveBufferSize:16384}" />
+		<property name="sendBufferSize" value="${canal.instance.network.sendBufferSize:16384}" />
+		<property name="defaultConnectionTimeoutInSeconds" value="${canal.instance.network.soTimeout:30}" />
+
+		<!-- 解析编码 -->
+		<!-- property name="connectionCharsetNumber" value="${canal.instance.connectionCharsetNumber:33}" /-->
+		<property name="connectionCharset" value="${canal.instance.connectionCharset:UTF-8}" />
+
+		<!-- 解析位点记录 -->
+		<property name="logPositionManager">
+			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+		</property>
+
+		<!-- failover切换时回退的时间 -->
+		<property name="fallbackIntervalInSeconds" value="${canal.instance.fallbackIntervalInSeconds:60}" />
+
+		<!-- 解析数据库信息 -->
+		<property name="masterInfo">
+			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
+				<property name="address" value="${canal.instance.master4.address}" />
+				<property name="username" value="${canal.instance.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
+				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
+				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
+			</bean>
+		</property>
+		<property name="standbyInfo">
+			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
+				<property name="address" value="${canal.instance.standby4.address}" />
+				<property name="username" value="${canal.instance.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
+				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
+				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
+			</bean>
+		</property>
+
+		<!-- 解析起始位点 -->
+		<property name="masterPosition">
+			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
+				<property name="journalName" value="${canal.instance.master4.journal.name}" />
+				<property name="position" value="${canal.instance.master4.position}" />
+				<property name="timestamp" value="${canal.instance.master4.timestamp}" />
+				<property name="gtid" value="${canal.instance.master4.gtid}" />
+			</bean>
+		</property>
+		<property name="standbyPosition">
+			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
+				<property name="journalName" value="${canal.instance.standby4.journal.name}" />
+				<property name="position" value="${canal.instance.standby4.position}" />
+				<property name="timestamp" value="${canal.instance.standby4.timestamp}" />
+				<property name="gtid" value="${canal.instance.standby4.gtid}" />
+			</bean>
+		</property>
+		<property name="filterQueryDml" value="${canal.instance.filter.query.dml:false}" />
+		<property name="filterQueryDcl" value="${canal.instance.filter.query.dcl:false}" />
+		<property name="filterQueryDdl" value="${canal.instance.filter.query.ddl:false}" />
+		<property name="useDruidDdlFilter" value="${canal.instance.filter.druid.ddl:true}" />
+		<property name="filterRows" value="${canal.instance.filter.rows:false}" />
+		<property name="filterTableError" value="${canal.instance.filter.table.error:false}" />
+		<property name="supportBinlogFormats" value="${canal.instance.binlog.format}" />
+		<property name="supportBinlogImages" value="${canal.instance.binlog.image}" />
+
+		<!-- parallel parser -->
+		<property name="parallel" value="${canal.instance.parser.parallel:true}" />
+		<property name="parallelThreadSize" value="${canal.instance.parser.parallelThreadSize}" />
+		<property name="parallelBufferSize" value="${canal.instance.parser.parallelBufferSize:256}" />
+	</bean>
+
+	<bean id="eventParser5" parent="baseEventParser">
+		<property name="destination" value="${canal.instance.destination}" />
+		<property name="slaveId" value="${canal.instance.mysql.slaveId:0}" />
+		<!-- 心跳配置 -->
+		<property name="detectingEnable" value="${canal.instance.detecting.enable:false}" />
+		<property name="detectingSQL" value="${canal.instance.detecting.sql}" />
+		<property name="detectingIntervalInSeconds" value="${canal.instance.detecting.interval.time:5}" />
+		<property name="haController">
+			<bean class="com.alibaba.otter.canal.parse.ha.HeartBeatHAController">
+				<property name="detectingRetryTimes" value="${canal.instance.detecting.retry.threshold:3}" />
+				<property name="switchEnable" value="${canal.instance.detecting.heartbeatHaEnable:false}" />
+			</bean>
+		</property>
+
+		<property name="alarmHandler" ref="alarmHandler" />
+
+		<!-- 解析过滤处理 -->
+		<property name="eventFilter">
+			<bean class="com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter" >
+				<constructor-arg index="0" value="${canal.instance.filter.regex:.*\..*}" />
+			</bean>
+		</property>
+
+		<property name="eventBlackFilter">
+			<bean class="com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter" >
+				<constructor-arg index="0" value="${canal.instance.filter.black.regex:}" />
+				<constructor-arg index="1" value="false" />
+			</bean>
+		</property>
+		<!-- 最大事务解析大小，超过该大小后事务将被切分为多个事务投递 -->
+		<property name="transactionSize" value="${canal.instance.transaction.size:1024}" />
+
+		<!-- 网络链接参数 -->
+		<property name="receiveBufferSize" value="${canal.instance.network.receiveBufferSize:16384}" />
+		<property name="sendBufferSize" value="${canal.instance.network.sendBufferSize:16384}" />
+		<property name="defaultConnectionTimeoutInSeconds" value="${canal.instance.network.soTimeout:30}" />
+
+		<!-- 解析编码 -->
+		<!-- property name="connectionCharsetNumber" value="${canal.instance.connectionCharsetNumber:33}" /-->
+		<property name="connectionCharset" value="${canal.instance.connectionCharset:UTF-8}" />
+
+		<!-- 解析位点记录 -->
+		<property name="logPositionManager">
+			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+		</property>
+
+		<!-- failover切换时回退的时间 -->
+		<property name="fallbackIntervalInSeconds" value="${canal.instance.fallbackIntervalInSeconds:60}" />
+
+		<!-- 解析数据库信息 -->
+		<property name="masterInfo">
+			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
+				<property name="address" value="${canal.instance.master5.address}" />
+				<property name="username" value="${canal.instance.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
+				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
+				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
+			</bean>
+		</property>
+		<property name="standbyInfo">
+			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
+				<property name="address" value="${canal.instance.standby5.address}" />
+				<property name="username" value="${canal.instance.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
+				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
+				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
+			</bean>
+		</property>
+
+		<!-- 解析起始位点 -->
+		<property name="masterPosition">
+			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
+				<property name="journalName" value="${canal.instance.master5.journal.name}" />
+				<property name="position" value="${canal.instance.master5.position}" />
+				<property name="timestamp" value="${canal.instance.master5.timestamp}" />
+				<property name="gtid" value="${canal.instance.master5.gtid}" />
+			</bean>
+		</property>
+		<property name="standbyPosition">
+			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
+				<property name="journalName" value="${canal.instance.standby5.journal.name}" />
+				<property name="position" value="${canal.instance.standby5.position}" />
+				<property name="timestamp" value="${canal.instance.standby5.timestamp}" />
+				<property name="gtid" value="${canal.instance.standby5.gtid}" />
+			</bean>
+		</property>
+		<property name="filterQueryDml" value="${canal.instance.filter.query.dml:false}" />
+		<property name="filterQueryDcl" value="${canal.instance.filter.query.dcl:false}" />
+		<property name="filterQueryDdl" value="${canal.instance.filter.query.ddl:false}" />
+		<property name="useDruidDdlFilter" value="${canal.instance.filter.druid.ddl:true}" />
+		<property name="filterRows" value="${canal.instance.filter.rows:false}" />
+		<property name="filterTableError" value="${canal.instance.filter.table.error:false}" />
+		<property name="supportBinlogFormats" value="${canal.instance.binlog.format}" />
+		<property name="supportBinlogImages" value="${canal.instance.binlog.image}" />
+
+		<!-- parallel parser -->
+		<property name="parallel" value="${canal.instance.parser.parallel:true}" />
+		<property name="parallelThreadSize" value="${canal.instance.parser.parallelThreadSize}" />
+		<property name="parallelBufferSize" value="${canal.instance.parser.parallelBufferSize:256}" />
+	</bean>
+
+	<bean id="eventParser6" parent="baseEventParser">
+		<property name="destination" value="${canal.instance.destination}" />
+		<property name="slaveId" value="${canal.instance.mysql.slaveId:0}" />
+		<!-- 心跳配置 -->
+		<property name="detectingEnable" value="${canal.instance.detecting.enable:false}" />
+		<property name="detectingSQL" value="${canal.instance.detecting.sql}" />
+		<property name="detectingIntervalInSeconds" value="${canal.instance.detecting.interval.time:5}" />
+		<property name="haController">
+			<bean class="com.alibaba.otter.canal.parse.ha.HeartBeatHAController">
+				<property name="detectingRetryTimes" value="${canal.instance.detecting.retry.threshold:3}" />
+				<property name="switchEnable" value="${canal.instance.detecting.heartbeatHaEnable:false}" />
+			</bean>
+		</property>
+
+		<property name="alarmHandler" ref="alarmHandler" />
+
+		<!-- 解析过滤处理 -->
+		<property name="eventFilter">
+			<bean class="com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter" >
+				<constructor-arg index="0" value="${canal.instance.filter.regex:.*\..*}" />
+			</bean>
+		</property>
+
+		<property name="eventBlackFilter">
+			<bean class="com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter" >
+				<constructor-arg index="0" value="${canal.instance.filter.black.regex:}" />
+				<constructor-arg index="1" value="false" />
+			</bean>
+		</property>
+		<!-- 最大事务解析大小，超过该大小后事务将被切分为多个事务投递 -->
+		<property name="transactionSize" value="${canal.instance.transaction.size:1024}" />
+
+		<!-- 网络链接参数 -->
+		<property name="receiveBufferSize" value="${canal.instance.network.receiveBufferSize:16384}" />
+		<property name="sendBufferSize" value="${canal.instance.network.sendBufferSize:16384}" />
+		<property name="defaultConnectionTimeoutInSeconds" value="${canal.instance.network.soTimeout:30}" />
+
+		<!-- 解析编码 -->
+		<!-- property name="connectionCharsetNumber" value="${canal.instance.connectionCharsetNumber:33}" /-->
+		<property name="connectionCharset" value="${canal.instance.connectionCharset:UTF-8}" />
+
+		<!-- 解析位点记录 -->
+		<property name="logPositionManager">
+			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+		</property>
+
+		<!-- failover切换时回退的时间 -->
+		<property name="fallbackIntervalInSeconds" value="${canal.instance.fallbackIntervalInSeconds:60}" />
+
+		<!-- 解析数据库信息 -->
+		<property name="masterInfo">
+			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
+				<property name="address" value="${canal.instance.master6.address}" />
+				<property name="username" value="${canal.instance.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
+				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
+				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
+			</bean>
+		</property>
+		<property name="standbyInfo">
+			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
+				<property name="address" value="${canal.instance.standby6.address}" />
+				<property name="username" value="${canal.instance.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
+				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
+				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
+			</bean>
+		</property>
+
+		<!-- 解析起始位点 -->
+		<property name="masterPosition">
+			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
+				<property name="journalName" value="${canal.instance.master6.journal.name}" />
+				<property name="position" value="${canal.instance.master6.position}" />
+				<property name="timestamp" value="${canal.instance.master6.timestamp}" />
+				<property name="gtid" value="${canal.instance.master6.gtid}" />
+			</bean>
+		</property>
+		<property name="standbyPosition">
+			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
+				<property name="journalName" value="${canal.instance.standby6.journal.name}" />
+				<property name="position" value="${canal.instance.standby6.position}" />
+				<property name="timestamp" value="${canal.instance.standby6.timestamp}" />
+				<property name="gtid" value="${canal.instance.standby6.gtid}" />
+			</bean>
+		</property>
+		<property name="filterQueryDml" value="${canal.instance.filter.query.dml:false}" />
+		<property name="filterQueryDcl" value="${canal.instance.filter.query.dcl:false}" />
+		<property name="filterQueryDdl" value="${canal.instance.filter.query.ddl:false}" />
+		<property name="useDruidDdlFilter" value="${canal.instance.filter.druid.ddl:true}" />
+		<property name="filterRows" value="${canal.instance.filter.rows:false}" />
+		<property name="filterTableError" value="${canal.instance.filter.table.error:false}" />
+		<property name="supportBinlogFormats" value="${canal.instance.binlog.format}" />
+		<property name="supportBinlogImages" value="${canal.instance.binlog.image}" />
+
+		<!-- parallel parser -->
+		<property name="parallel" value="${canal.instance.parser.parallel:true}" />
+		<property name="parallelThreadSize" value="${canal.instance.parser.parallelThreadSize}" />
+		<property name="parallelBufferSize" value="${canal.instance.parser.parallelBufferSize:256}" />
+	</bean>
+
+	<bean id="eventParser7" parent="baseEventParser">
+		<property name="destination" value="${canal.instance.destination}" />
+		<property name="slaveId" value="${canal.instance.mysql.slaveId:0}" />
+		<!-- 心跳配置 -->
+		<property name="detectingEnable" value="${canal.instance.detecting.enable:false}" />
+		<property name="detectingSQL" value="${canal.instance.detecting.sql}" />
+		<property name="detectingIntervalInSeconds" value="${canal.instance.detecting.interval.time:5}" />
+		<property name="haController">
+			<bean class="com.alibaba.otter.canal.parse.ha.HeartBeatHAController">
+				<property name="detectingRetryTimes" value="${canal.instance.detecting.retry.threshold:3}" />
+				<property name="switchEnable" value="${canal.instance.detecting.heartbeatHaEnable:false}" />
+			</bean>
+		</property>
+
+		<property name="alarmHandler" ref="alarmHandler" />
+
+		<!-- 解析过滤处理 -->
+		<property name="eventFilter">
+			<bean class="com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter" >
+				<constructor-arg index="0" value="${canal.instance.filter.regex:.*\..*}" />
+			</bean>
+		</property>
+
+		<property name="eventBlackFilter">
+			<bean class="com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter" >
+				<constructor-arg index="0" value="${canal.instance.filter.black.regex:}" />
+				<constructor-arg index="1" value="false" />
+			</bean>
+		</property>
+		<!-- 最大事务解析大小，超过该大小后事务将被切分为多个事务投递 -->
+		<property name="transactionSize" value="${canal.instance.transaction.size:1024}" />
+
+		<!-- 网络链接参数 -->
+		<property name="receiveBufferSize" value="${canal.instance.network.receiveBufferSize:16384}" />
+		<property name="sendBufferSize" value="${canal.instance.network.sendBufferSize:16384}" />
+		<property name="defaultConnectionTimeoutInSeconds" value="${canal.instance.network.soTimeout:30}" />
+
+		<!-- 解析编码 -->
+		<!-- property name="connectionCharsetNumber" value="${canal.instance.connectionCharsetNumber:33}" /-->
+		<property name="connectionCharset" value="${canal.instance.connectionCharset:UTF-8}" />
+
+		<!-- 解析位点记录 -->
+		<property name="logPositionManager">
+			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+		</property>
+
+		<!-- failover切换时回退的时间 -->
+		<property name="fallbackIntervalInSeconds" value="${canal.instance.fallbackIntervalInSeconds:60}" />
+
+		<!-- 解析数据库信息 -->
+		<property name="masterInfo">
+			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
+				<property name="address" value="${canal.instance.master7.address}" />
+				<property name="username" value="${canal.instance.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
+				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
+				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
+			</bean>
+		</property>
+		<property name="standbyInfo">
+			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
+				<property name="address" value="${canal.instance.standby7.address}" />
+				<property name="username" value="${canal.instance.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
+				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
+				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
+			</bean>
+		</property>
+
+		<!-- 解析起始位点 -->
+		<property name="masterPosition">
+			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
+				<property name="journalName" value="${canal.instance.master7.journal.name}" />
+				<property name="position" value="${canal.instance.master7.position}" />
+				<property name="timestamp" value="${canal.instance.master7.timestamp}" />
+				<property name="gtid" value="${canal.instance.master7.gtid}" />
+			</bean>
+		</property>
+		<property name="standbyPosition">
+			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
+				<property name="journalName" value="${canal.instance.standby7.journal.name}" />
+				<property name="position" value="${canal.instance.standby7.position}" />
+				<property name="timestamp" value="${canal.instance.standby7.timestamp}" />
+				<property name="gtid" value="${canal.instance.standby7.gtid}" />
+			</bean>
+		</property>
+		<property name="filterQueryDml" value="${canal.instance.filter.query.dml:false}" />
+		<property name="filterQueryDcl" value="${canal.instance.filter.query.dcl:false}" />
+		<property name="filterQueryDdl" value="${canal.instance.filter.query.ddl:false}" />
+		<property name="useDruidDdlFilter" value="${canal.instance.filter.druid.ddl:true}" />
+		<property name="filterRows" value="${canal.instance.filter.rows:false}" />
+		<property name="filterTableError" value="${canal.instance.filter.table.error:false}" />
+		<property name="supportBinlogFormats" value="${canal.instance.binlog.format}" />
+		<property name="supportBinlogImages" value="${canal.instance.binlog.image}" />
+
+		<!-- parallel parser -->
+		<property name="parallel" value="${canal.instance.parser.parallel:true}" />
+		<property name="parallelThreadSize" value="${canal.instance.parser.parallelThreadSize}" />
+		<property name="parallelBufferSize" value="${canal.instance.parser.parallelBufferSize:256}" />
+	</bean>
+
+	<bean id="eventParser8" parent="baseEventParser">
+		<property name="destination" value="${canal.instance.destination}" />
+		<property name="slaveId" value="${canal.instance.mysql.slaveId:0}" />
+		<!-- 心跳配置 -->
+		<property name="detectingEnable" value="${canal.instance.detecting.enable:false}" />
+		<property name="detectingSQL" value="${canal.instance.detecting.sql}" />
+		<property name="detectingIntervalInSeconds" value="${canal.instance.detecting.interval.time:5}" />
+		<property name="haController">
+			<bean class="com.alibaba.otter.canal.parse.ha.HeartBeatHAController">
+				<property name="detectingRetryTimes" value="${canal.instance.detecting.retry.threshold:3}" />
+				<property name="switchEnable" value="${canal.instance.detecting.heartbeatHaEnable:false}" />
+			</bean>
+		</property>
+
+		<property name="alarmHandler" ref="alarmHandler" />
+
+		<!-- 解析过滤处理 -->
+		<property name="eventFilter">
+			<bean class="com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter" >
+				<constructor-arg index="0" value="${canal.instance.filter.regex:.*\..*}" />
+			</bean>
+		</property>
+
+		<property name="eventBlackFilter">
+			<bean class="com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter" >
+				<constructor-arg index="0" value="${canal.instance.filter.black.regex:}" />
+				<constructor-arg index="1" value="false" />
+			</bean>
+		</property>
+		<!-- 最大事务解析大小，超过该大小后事务将被切分为多个事务投递 -->
+		<property name="transactionSize" value="${canal.instance.transaction.size:1024}" />
+
+		<!-- 网络链接参数 -->
+		<property name="receiveBufferSize" value="${canal.instance.network.receiveBufferSize:16384}" />
+		<property name="sendBufferSize" value="${canal.instance.network.sendBufferSize:16384}" />
+		<property name="defaultConnectionTimeoutInSeconds" value="${canal.instance.network.soTimeout:30}" />
+
+		<!-- 解析编码 -->
+		<!-- property name="connectionCharsetNumber" value="${canal.instance.connectionCharsetNumber:33}" /-->
+		<property name="connectionCharset" value="${canal.instance.connectionCharset:UTF-8}" />
+
+		<!-- 解析位点记录 -->
+		<property name="logPositionManager">
+			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+		</property>
+
+		<!-- failover切换时回退的时间 -->
+		<property name="fallbackIntervalInSeconds" value="${canal.instance.fallbackIntervalInSeconds:60}" />
+
+		<!-- 解析数据库信息 -->
+		<property name="masterInfo">
+			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
+				<property name="address" value="${canal.instance.master8.address}" />
+				<property name="username" value="${canal.instance.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
+				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
+				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
+			</bean>
+		</property>
+		<property name="standbyInfo">
+			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
+				<property name="address" value="${canal.instance.standby8.address}" />
+				<property name="username" value="${canal.instance.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
+				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
+				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
+			</bean>
+		</property>
+
+		<!-- 解析起始位点 -->
+		<property name="masterPosition">
+			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
+				<property name="journalName" value="${canal.instance.master8.journal.name}" />
+				<property name="position" value="${canal.instance.master8.position}" />
+				<property name="timestamp" value="${canal.instance.master8.timestamp}" />
+				<property name="gtid" value="${canal.instance.master8.gtid}" />
+			</bean>
+		</property>
+		<property name="standbyPosition">
+			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
+				<property name="journalName" value="${canal.instance.standby8.journal.name}" />
+				<property name="position" value="${canal.instance.standby8.position}" />
+				<property name="timestamp" value="${canal.instance.standby8.timestamp}" />
+				<property name="gtid" value="${canal.instance.standby8.gtid}" />
+			</bean>
+		</property>
+		<property name="filterQueryDml" value="${canal.instance.filter.query.dml:false}" />
+		<property name="filterQueryDcl" value="${canal.instance.filter.query.dcl:false}" />
+		<property name="filterQueryDdl" value="${canal.instance.filter.query.ddl:false}" />
+		<property name="useDruidDdlFilter" value="${canal.instance.filter.druid.ddl:true}" />
+		<property name="filterRows" value="${canal.instance.filter.rows:false}" />
+		<property name="filterTableError" value="${canal.instance.filter.table.error:false}" />
+		<property name="supportBinlogFormats" value="${canal.instance.binlog.format}" />
+		<property name="supportBinlogImages" value="${canal.instance.binlog.image}" />
+
+		<!-- parallel parser -->
+		<property name="parallel" value="${canal.instance.parser.parallel:true}" />
+		<property name="parallelThreadSize" value="${canal.instance.parser.parallelThreadSize}" />
+		<property name="parallelBufferSize" value="${canal.instance.parser.parallelBufferSize:256}" />
+	</bean>
+
+	<bean id="eventParser9" parent="baseEventParser">
+		<property name="destination" value="${canal.instance.destination}" />
+		<property name="slaveId" value="${canal.instance.mysql.slaveId:0}" />
+		<!-- 心跳配置 -->
+		<property name="detectingEnable" value="${canal.instance.detecting.enable:false}" />
+		<property name="detectingSQL" value="${canal.instance.detecting.sql}" />
+		<property name="detectingIntervalInSeconds" value="${canal.instance.detecting.interval.time:5}" />
+		<property name="haController">
+			<bean class="com.alibaba.otter.canal.parse.ha.HeartBeatHAController">
+				<property name="detectingRetryTimes" value="${canal.instance.detecting.retry.threshold:3}" />
+				<property name="switchEnable" value="${canal.instance.detecting.heartbeatHaEnable:false}" />
+			</bean>
+		</property>
+
+		<property name="alarmHandler" ref="alarmHandler" />
+
+		<!-- 解析过滤处理 -->
+		<property name="eventFilter">
+			<bean class="com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter" >
+				<constructor-arg index="0" value="${canal.instance.filter.regex:.*\..*}" />
+			</bean>
+		</property>
+
+		<property name="eventBlackFilter">
+			<bean class="com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter" >
+				<constructor-arg index="0" value="${canal.instance.filter.black.regex:}" />
+				<constructor-arg index="1" value="false" />
+			</bean>
+		</property>
+		<!-- 最大事务解析大小，超过该大小后事务将被切分为多个事务投递 -->
+		<property name="transactionSize" value="${canal.instance.transaction.size:1024}" />
+
+		<!-- 网络链接参数 -->
+		<property name="receiveBufferSize" value="${canal.instance.network.receiveBufferSize:16384}" />
+		<property name="sendBufferSize" value="${canal.instance.network.sendBufferSize:16384}" />
+		<property name="defaultConnectionTimeoutInSeconds" value="${canal.instance.network.soTimeout:30}" />
+
+		<!-- 解析编码 -->
+		<!-- property name="connectionCharsetNumber" value="${canal.instance.connectionCharsetNumber:33}" /-->
+		<property name="connectionCharset" value="${canal.instance.connectionCharset:UTF-8}" />
+
+		<!-- 解析位点记录 -->
+		<property name="logPositionManager">
+			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+		</property>
+
+		<!-- failover切换时回退的时间 -->
+		<property name="fallbackIntervalInSeconds" value="${canal.instance.fallbackIntervalInSeconds:60}" />
+
+		<!-- 解析数据库信息 -->
+		<property name="masterInfo">
+			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
+				<property name="address" value="${canal.instance.master9.address}" />
+				<property name="username" value="${canal.instance.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
+				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
+				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
+			</bean>
+		</property>
+		<property name="standbyInfo">
+			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
+				<property name="address" value="${canal.instance.standby9.address}" />
+				<property name="username" value="${canal.instance.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
+				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
+				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
+			</bean>
+		</property>
+
+		<!-- 解析起始位点 -->
+		<property name="masterPosition">
+			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
+				<property name="journalName" value="${canal.instance.master9.journal.name}" />
+				<property name="position" value="${canal.instance.master9.position}" />
+				<property name="timestamp" value="${canal.instance.master9.timestamp}" />
+				<property name="gtid" value="${canal.instance.master9.gtid}" />
+			</bean>
+		</property>
+		<property name="standbyPosition">
+			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
+				<property name="journalName" value="${canal.instance.standby9.journal.name}" />
+				<property name="position" value="${canal.instance.standby9.position}" />
+				<property name="timestamp" value="${canal.instance.standby9.timestamp}" />
+				<property name="gtid" value="${canal.instance.standby9.gtid}" />
+			</bean>
+		</property>
+		<property name="filterQueryDml" value="${canal.instance.filter.query.dml:false}" />
+		<property name="filterQueryDcl" value="${canal.instance.filter.query.dcl:false}" />
+		<property name="filterQueryDdl" value="${canal.instance.filter.query.ddl:false}" />
+		<property name="useDruidDdlFilter" value="${canal.instance.filter.druid.ddl:true}" />
+		<property name="filterRows" value="${canal.instance.filter.rows:false}" />
+		<property name="filterTableError" value="${canal.instance.filter.table.error:false}" />
+		<property name="supportBinlogFormats" value="${canal.instance.binlog.format}" />
+		<property name="supportBinlogImages" value="${canal.instance.binlog.image}" />
+
+		<!-- parallel parser -->
+		<property name="parallel" value="${canal.instance.parser.parallel:true}" />
+		<property name="parallelThreadSize" value="${canal.instance.parser.parallelThreadSize}" />
+		<property name="parallelBufferSize" value="${canal.instance.parser.parallelBufferSize:256}" />
+	</bean>
+
+	<bean id="eventParser10" parent="baseEventParser">
+		<property name="destination" value="${canal.instance.destination}" />
+		<property name="slaveId" value="${canal.instance.mysql.slaveId:0}" />
+		<!-- 心跳配置 -->
+		<property name="detectingEnable" value="${canal.instance.detecting.enable:false}" />
+		<property name="detectingSQL" value="${canal.instance.detecting.sql}" />
+		<property name="detectingIntervalInSeconds" value="${canal.instance.detecting.interval.time:5}" />
+		<property name="haController">
+			<bean class="com.alibaba.otter.canal.parse.ha.HeartBeatHAController">
+				<property name="detectingRetryTimes" value="${canal.instance.detecting.retry.threshold:3}" />
+				<property name="switchEnable" value="${canal.instance.detecting.heartbeatHaEnable:false}" />
+			</bean>
+		</property>
+
+		<property name="alarmHandler" ref="alarmHandler" />
+
+		<!-- 解析过滤处理 -->
+		<property name="eventFilter">
+			<bean class="com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter" >
+				<constructor-arg index="0" value="${canal.instance.filter.regex:.*\..*}" />
+			</bean>
+		</property>
+
+		<property name="eventBlackFilter">
+			<bean class="com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter" >
+				<constructor-arg index="0" value="${canal.instance.filter.black.regex:}" />
+				<constructor-arg index="1" value="false" />
+			</bean>
+		</property>
+		<!-- 最大事务解析大小，超过该大小后事务将被切分为多个事务投递 -->
+		<property name="transactionSize" value="${canal.instance.transaction.size:1024}" />
+
+		<!-- 网络链接参数 -->
+		<property name="receiveBufferSize" value="${canal.instance.network.receiveBufferSize:16384}" />
+		<property name="sendBufferSize" value="${canal.instance.network.sendBufferSize:16384}" />
+		<property name="defaultConnectionTimeoutInSeconds" value="${canal.instance.network.soTimeout:30}" />
+
+		<!-- 解析编码 -->
+		<!-- property name="connectionCharsetNumber" value="${canal.instance.connectionCharsetNumber:33}" /-->
+		<property name="connectionCharset" value="${canal.instance.connectionCharset:UTF-8}" />
+
+		<!-- 解析位点记录 -->
+		<property name="logPositionManager">
+			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+		</property>
+
+		<!-- failover切换时回退的时间 -->
+		<property name="fallbackIntervalInSeconds" value="${canal.instance.fallbackIntervalInSeconds:60}" />
+
+		<!-- 解析数据库信息 -->
+		<property name="masterInfo">
+			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
+				<property name="address" value="${canal.instance.master10.address}" />
+				<property name="username" value="${canal.instance.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
+				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
+				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
+			</bean>
+		</property>
+		<property name="standbyInfo">
+			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
+				<property name="address" value="${canal.instance.standby10.address}" />
+				<property name="username" value="${canal.instance.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
+				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
+				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
+			</bean>
+		</property>
+
+		<!-- 解析起始位点 -->
+		<property name="masterPosition">
+			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
+				<property name="journalName" value="${canal.instance.master10.journal.name}" />
+				<property name="position" value="${canal.instance.master10.position}" />
+				<property name="timestamp" value="${canal.instance.master10.timestamp}" />
+				<property name="gtid" value="${canal.instance.master10.gtid}" />
+			</bean>
+		</property>
+		<property name="standbyPosition">
+			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
+				<property name="journalName" value="${canal.instance.standby10.journal.name}" />
+				<property name="position" value="${canal.instance.standby10.position}" />
+				<property name="timestamp" value="${canal.instance.standby10.timestamp}" />
+				<property name="gtid" value="${canal.instance.standby10.gtid}" />
+			</bean>
+		</property>
+		<property name="filterQueryDml" value="${canal.instance.filter.query.dml:false}" />
+		<property name="filterQueryDcl" value="${canal.instance.filter.query.dcl:false}" />
+		<property name="filterQueryDdl" value="${canal.instance.filter.query.ddl:false}" />
+		<property name="useDruidDdlFilter" value="${canal.instance.filter.druid.ddl:true}" />
+		<property name="filterRows" value="${canal.instance.filter.rows:false}" />
+		<property name="filterTableError" value="${canal.instance.filter.table.error:false}" />
+		<property name="supportBinlogFormats" value="${canal.instance.binlog.format}" />
+		<property name="supportBinlogImages" value="${canal.instance.binlog.image}" />
+
+		<!-- parallel parser -->
+		<property name="parallel" value="${canal.instance.parser.parallel:true}" />
+		<property name="parallelThreadSize" value="${canal.instance.parser.parallelThreadSize}" />
+		<property name="parallelBufferSize" value="${canal.instance.parser.parallelBufferSize:256}" />
+	</bean>
+
+	<bean id="eventParser11" parent="baseEventParser">
+		<property name="destination" value="${canal.instance.destination}" />
+		<property name="slaveId" value="${canal.instance.mysql.slaveId:0}" />
+		<!-- 心跳配置 -->
+		<property name="detectingEnable" value="${canal.instance.detecting.enable:false}" />
+		<property name="detectingSQL" value="${canal.instance.detecting.sql}" />
+		<property name="detectingIntervalInSeconds" value="${canal.instance.detecting.interval.time:5}" />
+		<property name="haController">
+			<bean class="com.alibaba.otter.canal.parse.ha.HeartBeatHAController">
+				<property name="detectingRetryTimes" value="${canal.instance.detecting.retry.threshold:3}" />
+				<property name="switchEnable" value="${canal.instance.detecting.heartbeatHaEnable:false}" />
+			</bean>
+		</property>
+
+		<property name="alarmHandler" ref="alarmHandler" />
+
+		<!-- 解析过滤处理 -->
+		<property name="eventFilter">
+			<bean class="com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter" >
+				<constructor-arg index="0" value="${canal.instance.filter.regex:.*\..*}" />
+			</bean>
+		</property>
+
+		<property name="eventBlackFilter">
+			<bean class="com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter" >
+				<constructor-arg index="0" value="${canal.instance.filter.black.regex:}" />
+				<constructor-arg index="1" value="false" />
+			</bean>
+		</property>
+		<!-- 最大事务解析大小，超过该大小后事务将被切分为多个事务投递 -->
+		<property name="transactionSize" value="${canal.instance.transaction.size:1024}" />
+
+		<!-- 网络链接参数 -->
+		<property name="receiveBufferSize" value="${canal.instance.network.receiveBufferSize:16384}" />
+		<property name="sendBufferSize" value="${canal.instance.network.sendBufferSize:16384}" />
+		<property name="defaultConnectionTimeoutInSeconds" value="${canal.instance.network.soTimeout:30}" />
+
+		<!-- 解析编码 -->
+		<!-- property name="connectionCharsetNumber" value="${canal.instance.connectionCharsetNumber:33}" /-->
+		<property name="connectionCharset" value="${canal.instance.connectionCharset:UTF-8}" />
+
+		<!-- 解析位点记录 -->
+		<property name="logPositionManager">
+			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+		</property>
+
+		<!-- failover切换时回退的时间 -->
+		<property name="fallbackIntervalInSeconds" value="${canal.instance.fallbackIntervalInSeconds:60}" />
+
+		<!-- 解析数据库信息 -->
+		<property name="masterInfo">
+			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
+				<property name="address" value="${canal.instance.master11.address}" />
+				<property name="username" value="${canal.instance.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
+				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
+				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
+			</bean>
+		</property>
+		<property name="standbyInfo">
+			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
+				<property name="address" value="${canal.instance.standby11.address}" />
+				<property name="username" value="${canal.instance.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
+				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
+				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
+			</bean>
+		</property>
+
+		<!-- 解析起始位点 -->
+		<property name="masterPosition">
+			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
+				<property name="journalName" value="${canal.instance.master11.journal.name}" />
+				<property name="position" value="${canal.instance.master11.position}" />
+				<property name="timestamp" value="${canal.instance.master11.timestamp}" />
+				<property name="gtid" value="${canal.instance.master11.gtid}" />
+			</bean>
+		</property>
+		<property name="standbyPosition">
+			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
+				<property name="journalName" value="${canal.instance.standby11.journal.name}" />
+				<property name="position" value="${canal.instance.standby11.position}" />
+				<property name="timestamp" value="${canal.instance.standby11.timestamp}" />
+				<property name="gtid" value="${canal.instance.standby11.gtid}" />
+			</bean>
+		</property>
+		<property name="filterQueryDml" value="${canal.instance.filter.query.dml:false}" />
+		<property name="filterQueryDcl" value="${canal.instance.filter.query.dcl:false}" />
+		<property name="filterQueryDdl" value="${canal.instance.filter.query.ddl:false}" />
+		<property name="useDruidDdlFilter" value="${canal.instance.filter.druid.ddl:true}" />
+		<property name="filterRows" value="${canal.instance.filter.rows:false}" />
+		<property name="filterTableError" value="${canal.instance.filter.table.error:false}" />
+		<property name="supportBinlogFormats" value="${canal.instance.binlog.format}" />
+		<property name="supportBinlogImages" value="${canal.instance.binlog.image}" />
+
+		<!-- parallel parser -->
+		<property name="parallel" value="${canal.instance.parser.parallel:true}" />
+		<property name="parallelThreadSize" value="${canal.instance.parser.parallelThreadSize}" />
+		<property name="parallelBufferSize" value="${canal.instance.parser.parallelBufferSize:256}" />
+	</bean>
+
+	<bean id="eventParser12" parent="baseEventParser">
+		<property name="destination" value="${canal.instance.destination}" />
+		<property name="slaveId" value="${canal.instance.mysql.slaveId:0}" />
+		<!-- 心跳配置 -->
+		<property name="detectingEnable" value="${canal.instance.detecting.enable:false}" />
+		<property name="detectingSQL" value="${canal.instance.detecting.sql}" />
+		<property name="detectingIntervalInSeconds" value="${canal.instance.detecting.interval.time:5}" />
+		<property name="haController">
+			<bean class="com.alibaba.otter.canal.parse.ha.HeartBeatHAController">
+				<property name="detectingRetryTimes" value="${canal.instance.detecting.retry.threshold:3}" />
+				<property name="switchEnable" value="${canal.instance.detecting.heartbeatHaEnable:false}" />
+			</bean>
+		</property>
+
+		<property name="alarmHandler" ref="alarmHandler" />
+
+		<!-- 解析过滤处理 -->
+		<property name="eventFilter">
+			<bean class="com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter" >
+				<constructor-arg index="0" value="${canal.instance.filter.regex:.*\..*}" />
+			</bean>
+		</property>
+
+		<property name="eventBlackFilter">
+			<bean class="com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter" >
+				<constructor-arg index="0" value="${canal.instance.filter.black.regex:}" />
+				<constructor-arg index="1" value="false" />
+			</bean>
+		</property>
+		<!-- 最大事务解析大小，超过该大小后事务将被切分为多个事务投递 -->
+		<property name="transactionSize" value="${canal.instance.transaction.size:1024}" />
+
+		<!-- 网络链接参数 -->
+		<property name="receiveBufferSize" value="${canal.instance.network.receiveBufferSize:16384}" />
+		<property name="sendBufferSize" value="${canal.instance.network.sendBufferSize:16384}" />
+		<property name="defaultConnectionTimeoutInSeconds" value="${canal.instance.network.soTimeout:30}" />
+
+		<!-- 解析编码 -->
+		<!-- property name="connectionCharsetNumber" value="${canal.instance.connectionCharsetNumber:33}" /-->
+		<property name="connectionCharset" value="${canal.instance.connectionCharset:UTF-8}" />
+
+		<!-- 解析位点记录 -->
+		<property name="logPositionManager">
+			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+		</property>
+
+		<!-- failover切换时回退的时间 -->
+		<property name="fallbackIntervalInSeconds" value="${canal.instance.fallbackIntervalInSeconds:60}" />
+
+		<!-- 解析数据库信息 -->
+		<property name="masterInfo">
+			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
+				<property name="address" value="${canal.instance.master12.address}" />
+				<property name="username" value="${canal.instance.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
+				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
+				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
+			</bean>
+		</property>
+		<property name="standbyInfo">
+			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
+				<property name="address" value="${canal.instance.standby12.address}" />
+				<property name="username" value="${canal.instance.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
+				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
+				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
+			</bean>
+		</property>
+
+		<!-- 解析起始位点 -->
+		<property name="masterPosition">
+			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
+				<property name="journalName" value="${canal.instance.master12.journal.name}" />
+				<property name="position" value="${canal.instance.master12.position}" />
+				<property name="timestamp" value="${canal.instance.master12.timestamp}" />
+				<property name="gtid" value="${canal.instance.master12.gtid}" />
+			</bean>
+		</property>
+		<property name="standbyPosition">
+			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
+				<property name="journalName" value="${canal.instance.standby12.journal.name}" />
+				<property name="position" value="${canal.instance.standby12.position}" />
+				<property name="timestamp" value="${canal.instance.standby12.timestamp}" />
+				<property name="gtid" value="${canal.instance.standby12.gtid}" />
+			</bean>
+		</property>
+		<property name="filterQueryDml" value="${canal.instance.filter.query.dml:false}" />
+		<property name="filterQueryDcl" value="${canal.instance.filter.query.dcl:false}" />
+		<property name="filterQueryDdl" value="${canal.instance.filter.query.ddl:false}" />
+		<property name="useDruidDdlFilter" value="${canal.instance.filter.druid.ddl:true}" />
+		<property name="filterRows" value="${canal.instance.filter.rows:false}" />
+		<property name="filterTableError" value="${canal.instance.filter.table.error:false}" />
+		<property name="supportBinlogFormats" value="${canal.instance.binlog.format}" />
+		<property name="supportBinlogImages" value="${canal.instance.binlog.image}" />
+
+		<!-- parallel parser -->
+		<property name="parallel" value="${canal.instance.parser.parallel:true}" />
+		<property name="parallelThreadSize" value="${canal.instance.parser.parallelThreadSize}" />
+		<property name="parallelBufferSize" value="${canal.instance.parser.parallelBufferSize:256}" />
+	</bean>
+
+	<bean id="eventParser13" parent="baseEventParser">
+		<property name="destination" value="${canal.instance.destination}" />
+		<property name="slaveId" value="${canal.instance.mysql.slaveId:0}" />
+		<!-- 心跳配置 -->
+		<property name="detectingEnable" value="${canal.instance.detecting.enable:false}" />
+		<property name="detectingSQL" value="${canal.instance.detecting.sql}" />
+		<property name="detectingIntervalInSeconds" value="${canal.instance.detecting.interval.time:5}" />
+		<property name="haController">
+			<bean class="com.alibaba.otter.canal.parse.ha.HeartBeatHAController">
+				<property name="detectingRetryTimes" value="${canal.instance.detecting.retry.threshold:3}" />
+				<property name="switchEnable" value="${canal.instance.detecting.heartbeatHaEnable:false}" />
+			</bean>
+		</property>
+
+		<property name="alarmHandler" ref="alarmHandler" />
+
+		<!-- 解析过滤处理 -->
+		<property name="eventFilter">
+			<bean class="com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter" >
+				<constructor-arg index="0" value="${canal.instance.filter.regex:.*\..*}" />
+			</bean>
+		</property>
+
+		<property name="eventBlackFilter">
+			<bean class="com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter" >
+				<constructor-arg index="0" value="${canal.instance.filter.black.regex:}" />
+				<constructor-arg index="1" value="false" />
+			</bean>
+		</property>
+		<!-- 最大事务解析大小，超过该大小后事务将被切分为多个事务投递 -->
+		<property name="transactionSize" value="${canal.instance.transaction.size:1024}" />
+
+		<!-- 网络链接参数 -->
+		<property name="receiveBufferSize" value="${canal.instance.network.receiveBufferSize:16384}" />
+		<property name="sendBufferSize" value="${canal.instance.network.sendBufferSize:16384}" />
+		<property name="defaultConnectionTimeoutInSeconds" value="${canal.instance.network.soTimeout:30}" />
+
+		<!-- 解析编码 -->
+		<!-- property name="connectionCharsetNumber" value="${canal.instance.connectionCharsetNumber:33}" /-->
+		<property name="connectionCharset" value="${canal.instance.connectionCharset:UTF-8}" />
+
+		<!-- 解析位点记录 -->
+		<property name="logPositionManager">
+			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+		</property>
+
+		<!-- failover切换时回退的时间 -->
+		<property name="fallbackIntervalInSeconds" value="${canal.instance.fallbackIntervalInSeconds:60}" />
+
+		<!-- 解析数据库信息 -->
+		<property name="masterInfo">
+			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
+				<property name="address" value="${canal.instance.master13.address}" />
+				<property name="username" value="${canal.instance.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
+				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
+				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
+			</bean>
+		</property>
+		<property name="standbyInfo">
+			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
+				<property name="address" value="${canal.instance.standby13.address}" />
+				<property name="username" value="${canal.instance.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
+				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
+				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
+			</bean>
+		</property>
+
+		<!-- 解析起始位点 -->
+		<property name="masterPosition">
+			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
+				<property name="journalName" value="${canal.instance.master13.journal.name}" />
+				<property name="position" value="${canal.instance.master13.position}" />
+				<property name="timestamp" value="${canal.instance.master13.timestamp}" />
+				<property name="gtid" value="${canal.instance.master13.gtid}" />
+			</bean>
+		</property>
+		<property name="standbyPosition">
+			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
+				<property name="journalName" value="${canal.instance.standby13.journal.name}" />
+				<property name="position" value="${canal.instance.standby13.position}" />
+				<property name="timestamp" value="${canal.instance.standby13.timestamp}" />
+				<property name="gtid" value="${canal.instance.standby13.gtid}" />
+			</bean>
+		</property>
+		<property name="filterQueryDml" value="${canal.instance.filter.query.dml:false}" />
+		<property name="filterQueryDcl" value="${canal.instance.filter.query.dcl:false}" />
+		<property name="filterQueryDdl" value="${canal.instance.filter.query.ddl:false}" />
+		<property name="useDruidDdlFilter" value="${canal.instance.filter.druid.ddl:true}" />
+		<property name="filterRows" value="${canal.instance.filter.rows:false}" />
+		<property name="filterTableError" value="${canal.instance.filter.table.error:false}" />
+		<property name="supportBinlogFormats" value="${canal.instance.binlog.format}" />
+		<property name="supportBinlogImages" value="${canal.instance.binlog.image}" />
+
+		<!-- parallel parser -->
+		<property name="parallel" value="${canal.instance.parser.parallel:true}" />
+		<property name="parallelThreadSize" value="${canal.instance.parser.parallelThreadSize}" />
+		<property name="parallelBufferSize" value="${canal.instance.parser.parallelBufferSize:256}" />
+	</bean>
+
     <bean id="mqConfig" class="com.alibaba.otter.canal.instance.core.CanalMQConfig">
         <property name="topic" value="${canal.mq.topic}" />
 		<property name="dynamicTopic" value="${canal.mq.dynamicTopic}" />
