@@ -57,6 +57,17 @@
 			<list>
 				<ref bean="eventParser1" />
 				<ref bean="eventParser2" />
+				<ref bean="eventParser3" />
+				<ref bean="eventParser4" />
+				<ref bean="eventParser5" />
+				<ref bean="eventParser6" />
+				<ref bean="eventParser7" />
+				<ref bean="eventParser8" />
+				<ref bean="eventParser9" />
+				<ref bean="eventParser10" />
+				<ref bean="eventParser11" />
+				<ref bean="eventParser12" />
+				<ref bean="eventParser13" />
 			</list>
 		</property>
 	</bean>
