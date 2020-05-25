@@ -129,8 +129,8 @@
 		<property name="masterInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.master1.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding1.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding1.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -139,8 +139,8 @@
 		<property name="standbyInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.standby1.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding1.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding1.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -231,8 +231,8 @@
 		<property name="masterInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.master2.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding2.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding2.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -241,8 +241,8 @@
 		<property name="standbyInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.standby2.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding2.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding2.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -334,8 +334,8 @@
 		<property name="masterInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.master3.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding3.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding3.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -344,8 +344,8 @@
 		<property name="standbyInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.standby3.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding3.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding3.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -437,8 +437,8 @@
 		<property name="masterInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.master4.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding4.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding4.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -447,8 +447,8 @@
 		<property name="standbyInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.standby4.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding4.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding4.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -540,8 +540,8 @@
 		<property name="masterInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.master5.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding5.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding5.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -550,8 +550,8 @@
 		<property name="standbyInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.standby5.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding5.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding5.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -643,8 +643,8 @@
 		<property name="masterInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.master6.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding6.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding6.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -653,8 +653,8 @@
 		<property name="standbyInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.standby6.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding6.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding6.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -746,8 +746,8 @@
 		<property name="masterInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.master7.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding7.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding7.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -756,8 +756,8 @@
 		<property name="standbyInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.standby7.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding7.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding7.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -849,8 +849,8 @@
 		<property name="masterInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.master8.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding8.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding8.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -859,8 +859,8 @@
 		<property name="standbyInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.standby8.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding8.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding8.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -952,8 +952,8 @@
 		<property name="masterInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.master9.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding9.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding9.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -962,8 +962,8 @@
 		<property name="standbyInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.standby9.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding9.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding9.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -1055,8 +1055,8 @@
 		<property name="masterInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.master10.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding10.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding10.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -1065,8 +1065,8 @@
 		<property name="standbyInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.standby10.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding10.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding10.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -1158,8 +1158,8 @@
 		<property name="masterInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.master11.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding11.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding11.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -1168,8 +1168,8 @@
 		<property name="standbyInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.standby11.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding11.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding11.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -1261,8 +1261,8 @@
 		<property name="masterInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.master12.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding12.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding12.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -1271,8 +1271,8 @@
 		<property name="standbyInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.standby12.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding12.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding12.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -1364,8 +1364,8 @@
 		<property name="masterInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.master13.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding13.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding13.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
@@ -1374,8 +1374,8 @@
 		<property name="standbyInfo">
 			<bean class="com.alibaba.otter.canal.parse.support.AuthenticationInfo" init-method="initPwd">
 				<property name="address" value="${canal.instance.standby13.address}" />
-				<property name="username" value="${canal.instance.dbUsername:retl}" />
-				<property name="password" value="${canal.instance.dbPassword:retl}" />
+				<property name="username" value="${canal.instance.sharding13.dbUsername:retl}" />
+				<property name="password" value="${canal.instance.sharding13.dbPassword:retl}" />
 				<property name="pwdPublicKey" value="${canal.instance.pwdPublicKey:retl}" />
 				<property name="enableDruid" value="${canal.instance.enableDruid:false}" />
 				<property name="defaultDatabaseName" value="${canal.instance.defaultDatabaseName:}" />
