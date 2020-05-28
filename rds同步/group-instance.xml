@@ -37,7 +37,24 @@
 	<!-- 报警处理类 -->
 	<bean id="alarmHandler" class="com.alibaba.otter.canal.common.alarm.LogAlarmHandler" />
 
-	<bean id="metaManager" class="com.alibaba.otter.canal.meta.MemoryMetaManager" />
+	<bean id="zkClientx" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" >
+		<property name="targetClass" value="com.alibaba.otter.canal.common.zookeeper.ZkClientx" />
+		<property name="targetMethod" value="getZkClient" />
+		<property name="arguments">
+			<list>
+				<value>${canal.zkServers:127.0.0.1:2181}</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="metaManager" class="com.alibaba.otter.canal.meta.PeriodMixedMetaManager">
+		<property name="zooKeeperMetaManager">
+			<bean class="com.alibaba.otter.canal.meta.ZooKeeperMetaManager">
+				<property name="zkClientx" ref="zkClientx" />
+			</bean>
+		</property>
+		<property name="period" value="${canal.zookeeper.flush.period:1000}" />
+	</bean>
 
 	<bean id="eventStore" class="com.alibaba.otter.canal.store.memory.MemoryEventStoreWithBuffer">
 		<property name="bufferSize" value="${canal.instance.memory.buffer.size:16384}" />
@@ -119,7 +136,16 @@
 
 		<!-- 解析位点记录 -->
 		<property name="logPositionManager">
-			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+			<bean class="com.alibaba.otter.canal.parse.index.FailbackLogPositionManager">
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+				</constructor-arg>
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MetaLogPositionManager">
+						<constructor-arg ref="metaManager"/>
+					</bean>
+				</constructor-arg>
+			</bean>
 		</property>
 
 		<!-- failover切换时回退的时间 -->
@@ -152,7 +178,7 @@
 			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
 				<property name="journalName" value="${canal.instance.master1.journal.name}" />
 				<property name="position" value="${canal.instance.master1.position}" />
-				<property name="timestamp" value="${canal.instance.master1.timestamp}" />
+				<property name="timestamp" value="${canal.instance.master.timestamp}" />
 				<property name="gtid" value="${canal.instance.master1.gtid}" />
 			</bean>
 		</property>
@@ -221,7 +247,16 @@
 
 		<!-- 解析位点记录 -->
 		<property name="logPositionManager">
-			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+			<bean class="com.alibaba.otter.canal.parse.index.FailbackLogPositionManager">
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+				</constructor-arg>
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MetaLogPositionManager">
+						<constructor-arg ref="metaManager"/>
+					</bean>
+				</constructor-arg>
+			</bean>
 		</property>
 
 		<!-- failover切换时回退的时间 -->
@@ -254,7 +289,7 @@
 			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
 				<property name="journalName" value="${canal.instance.master2.journal.name}" />
 				<property name="position" value="${canal.instance.master2.position}" />
-				<property name="timestamp" value="${canal.instance.master2.timestamp}" />
+				<property name="timestamp" value="${canal.instance.master.timestamp}" />
 				<property name="gtid" value="${canal.instance.master2.gtid}" />
 			</bean>
 		</property>
@@ -324,7 +359,16 @@
 
 		<!-- 解析位点记录 -->
 		<property name="logPositionManager">
-			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+			<bean class="com.alibaba.otter.canal.parse.index.FailbackLogPositionManager">
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+				</constructor-arg>
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MetaLogPositionManager">
+						<constructor-arg ref="metaManager"/>
+					</bean>
+				</constructor-arg>
+			</bean>
 		</property>
 
 		<!-- failover切换时回退的时间 -->
@@ -357,7 +401,7 @@
 			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
 				<property name="journalName" value="${canal.instance.master3.journal.name}" />
 				<property name="position" value="${canal.instance.master3.position}" />
-				<property name="timestamp" value="${canal.instance.master3.timestamp}" />
+				<property name="timestamp" value="${canal.instance.master.timestamp}" />
 				<property name="gtid" value="${canal.instance.master3.gtid}" />
 			</bean>
 		</property>
@@ -427,7 +471,16 @@
 
 		<!-- 解析位点记录 -->
 		<property name="logPositionManager">
-			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+			<bean class="com.alibaba.otter.canal.parse.index.FailbackLogPositionManager">
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+				</constructor-arg>
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MetaLogPositionManager">
+						<constructor-arg ref="metaManager"/>
+					</bean>
+				</constructor-arg>
+			</bean>
 		</property>
 
 		<!-- failover切换时回退的时间 -->
@@ -460,7 +513,7 @@
 			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
 				<property name="journalName" value="${canal.instance.master4.journal.name}" />
 				<property name="position" value="${canal.instance.master4.position}" />
-				<property name="timestamp" value="${canal.instance.master4.timestamp}" />
+				<property name="timestamp" value="${canal.instance.master.timestamp}" />
 				<property name="gtid" value="${canal.instance.master4.gtid}" />
 			</bean>
 		</property>
@@ -530,7 +583,16 @@
 
 		<!-- 解析位点记录 -->
 		<property name="logPositionManager">
-			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+			<bean class="com.alibaba.otter.canal.parse.index.FailbackLogPositionManager">
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+				</constructor-arg>
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MetaLogPositionManager">
+						<constructor-arg ref="metaManager"/>
+					</bean>
+				</constructor-arg>
+			</bean>
 		</property>
 
 		<!-- failover切换时回退的时间 -->
@@ -563,7 +625,7 @@
 			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
 				<property name="journalName" value="${canal.instance.master5.journal.name}" />
 				<property name="position" value="${canal.instance.master5.position}" />
-				<property name="timestamp" value="${canal.instance.master5.timestamp}" />
+				<property name="timestamp" value="${canal.instance.master.timestamp}" />
 				<property name="gtid" value="${canal.instance.master5.gtid}" />
 			</bean>
 		</property>
@@ -633,7 +695,16 @@
 
 		<!-- 解析位点记录 -->
 		<property name="logPositionManager">
-			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+			<bean class="com.alibaba.otter.canal.parse.index.FailbackLogPositionManager">
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+				</constructor-arg>
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MetaLogPositionManager">
+						<constructor-arg ref="metaManager"/>
+					</bean>
+				</constructor-arg>
+			</bean>
 		</property>
 
 		<!-- failover切换时回退的时间 -->
@@ -666,7 +737,7 @@
 			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
 				<property name="journalName" value="${canal.instance.master6.journal.name}" />
 				<property name="position" value="${canal.instance.master6.position}" />
-				<property name="timestamp" value="${canal.instance.master6.timestamp}" />
+				<property name="timestamp" value="${canal.instance.master.timestamp}" />
 				<property name="gtid" value="${canal.instance.master6.gtid}" />
 			</bean>
 		</property>
@@ -736,7 +807,16 @@
 
 		<!-- 解析位点记录 -->
 		<property name="logPositionManager">
-			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+			<bean class="com.alibaba.otter.canal.parse.index.FailbackLogPositionManager">
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+				</constructor-arg>
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MetaLogPositionManager">
+						<constructor-arg ref="metaManager"/>
+					</bean>
+				</constructor-arg>
+			</bean>
 		</property>
 
 		<!-- failover切换时回退的时间 -->
@@ -769,7 +849,7 @@
 			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
 				<property name="journalName" value="${canal.instance.master7.journal.name}" />
 				<property name="position" value="${canal.instance.master7.position}" />
-				<property name="timestamp" value="${canal.instance.master7.timestamp}" />
+				<property name="timestamp" value="${canal.instance.master.timestamp}" />
 				<property name="gtid" value="${canal.instance.master7.gtid}" />
 			</bean>
 		</property>
@@ -839,7 +919,16 @@
 
 		<!-- 解析位点记录 -->
 		<property name="logPositionManager">
-			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+			<bean class="com.alibaba.otter.canal.parse.index.FailbackLogPositionManager">
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+				</constructor-arg>
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MetaLogPositionManager">
+						<constructor-arg ref="metaManager"/>
+					</bean>
+				</constructor-arg>
+			</bean>
 		</property>
 
 		<!-- failover切换时回退的时间 -->
@@ -872,7 +961,7 @@
 			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
 				<property name="journalName" value="${canal.instance.master8.journal.name}" />
 				<property name="position" value="${canal.instance.master8.position}" />
-				<property name="timestamp" value="${canal.instance.master8.timestamp}" />
+				<property name="timestamp" value="${canal.instance.master.timestamp}" />
 				<property name="gtid" value="${canal.instance.master8.gtid}" />
 			</bean>
 		</property>
@@ -942,7 +1031,16 @@
 
 		<!-- 解析位点记录 -->
 		<property name="logPositionManager">
-			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+			<bean class="com.alibaba.otter.canal.parse.index.FailbackLogPositionManager">
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+				</constructor-arg>
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MetaLogPositionManager">
+						<constructor-arg ref="metaManager"/>
+					</bean>
+				</constructor-arg>
+			</bean>
 		</property>
 
 		<!-- failover切换时回退的时间 -->
@@ -975,7 +1073,7 @@
 			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
 				<property name="journalName" value="${canal.instance.master9.journal.name}" />
 				<property name="position" value="${canal.instance.master9.position}" />
-				<property name="timestamp" value="${canal.instance.master9.timestamp}" />
+				<property name="timestamp" value="${canal.instance.master.timestamp}" />
 				<property name="gtid" value="${canal.instance.master9.gtid}" />
 			</bean>
 		</property>
@@ -1045,7 +1143,16 @@
 
 		<!-- 解析位点记录 -->
 		<property name="logPositionManager">
-			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+			<bean class="com.alibaba.otter.canal.parse.index.FailbackLogPositionManager">
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+				</constructor-arg>
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MetaLogPositionManager">
+						<constructor-arg ref="metaManager"/>
+					</bean>
+				</constructor-arg>
+			</bean>
 		</property>
 
 		<!-- failover切换时回退的时间 -->
@@ -1078,7 +1185,7 @@
 			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
 				<property name="journalName" value="${canal.instance.master10.journal.name}" />
 				<property name="position" value="${canal.instance.master10.position}" />
-				<property name="timestamp" value="${canal.instance.master10.timestamp}" />
+				<property name="timestamp" value="${canal.instance.master.timestamp}" />
 				<property name="gtid" value="${canal.instance.master10.gtid}" />
 			</bean>
 		</property>
@@ -1148,7 +1255,16 @@
 
 		<!-- 解析位点记录 -->
 		<property name="logPositionManager">
-			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+			<bean class="com.alibaba.otter.canal.parse.index.FailbackLogPositionManager">
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+				</constructor-arg>
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MetaLogPositionManager">
+						<constructor-arg ref="metaManager"/>
+					</bean>
+				</constructor-arg>
+			</bean>
 		</property>
 
 		<!-- failover切换时回退的时间 -->
@@ -1181,7 +1297,7 @@
 			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
 				<property name="journalName" value="${canal.instance.master11.journal.name}" />
 				<property name="position" value="${canal.instance.master11.position}" />
-				<property name="timestamp" value="${canal.instance.master11.timestamp}" />
+				<property name="timestamp" value="${canal.instance.master.timestamp}" />
 				<property name="gtid" value="${canal.instance.master11.gtid}" />
 			</bean>
 		</property>
@@ -1251,7 +1367,16 @@
 
 		<!-- 解析位点记录 -->
 		<property name="logPositionManager">
-			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+			<bean class="com.alibaba.otter.canal.parse.index.FailbackLogPositionManager">
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+				</constructor-arg>
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MetaLogPositionManager">
+						<constructor-arg ref="metaManager"/>
+					</bean>
+				</constructor-arg>
+			</bean>
 		</property>
 
 		<!-- failover切换时回退的时间 -->
@@ -1284,7 +1409,7 @@
 			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
 				<property name="journalName" value="${canal.instance.master12.journal.name}" />
 				<property name="position" value="${canal.instance.master12.position}" />
-				<property name="timestamp" value="${canal.instance.master12.timestamp}" />
+				<property name="timestamp" value="${canal.instance.master.timestamp}" />
 				<property name="gtid" value="${canal.instance.master12.gtid}" />
 			</bean>
 		</property>
@@ -1354,7 +1479,16 @@
 
 		<!-- 解析位点记录 -->
 		<property name="logPositionManager">
-			<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+			<bean class="com.alibaba.otter.canal.parse.index.FailbackLogPositionManager">
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MemoryLogPositionManager" />
+				</constructor-arg>
+				<constructor-arg>
+					<bean class="com.alibaba.otter.canal.parse.index.MetaLogPositionManager">
+						<constructor-arg ref="metaManager"/>
+					</bean>
+				</constructor-arg>
+			</bean>
 		</property>
 
 		<!-- failover切换时回退的时间 -->
@@ -1387,7 +1521,7 @@
 			<bean class="com.alibaba.otter.canal.protocol.position.EntryPosition">
 				<property name="journalName" value="${canal.instance.master13.journal.name}" />
 				<property name="position" value="${canal.instance.master13.position}" />
-				<property name="timestamp" value="${canal.instance.master13.timestamp}" />
+				<property name="timestamp" value="${canal.instance.master.timestamp}" />
 				<property name="gtid" value="${canal.instance.master13.gtid}" />
 			</bean>
 		</property>
